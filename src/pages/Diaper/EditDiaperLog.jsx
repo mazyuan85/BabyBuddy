@@ -1,23 +1,48 @@
 import { useEffect, useState } from "react";
 import { Typography, Container, Box, CircularProgress, Avatar, TextField, Button } from "@mui/material";
 import { MobileDateTimePicker } from "@mui/x-date-pickers";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
-export default function AddDiaperLog({activeBaby, user}) {
+export default function EditDiaperLog({activeBaby, user}) {
       const [diaperType, setDiaperType] = useState("");
       const [diaperRemarks, setDiaperRemarks] = useState("");
       const [diaperTime, setDiaperTime] = useState(dayjs());
       const [isDateValid, setIsDateValid] = useState(true);
       const [error, setError] = useState('');
       const navigate = useNavigate();
+      const { id } = useParams();
 
       useEffect(() => {
         if (!user) {
             navigate("/");
             return;
         }
-      }, [user, navigate]);
+        const fetchDiaperLog = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await fetch(`/api/main/diaper/edit/${id}`,{
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                })
+                if (response.ok) {
+                    const responseBody = await response.json();
+                    setDiaperRemarks(responseBody.remarks);
+                    setDiaperTime(dayjs(responseBody.dateTime));
+                    setDiaperType(responseBody.type)
+                }
+                else {
+                    navigate("/")
+                    setError('Retrieving Diaper Log Failed - Try Again');
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchDiaperLog();
+      }, [id, user, navigate]);
       
       function handleChange(event) {
         setDiaperRemarks(event.target.value);
@@ -37,19 +62,19 @@ export default function AddDiaperLog({activeBaby, user}) {
         }
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("/api/main/diaper/add", {
-                method: "POST",
+            const response = await fetch(`/api/main/diaper/edit/${id}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ baby : activeBaby._id, type: diaperType, remarks: diaperRemarks, dateTime: diaperTime })
+                body: JSON.stringify({ type: diaperType, remarks: diaperRemarks, dateTime: diaperTime })
             });
             if (response.ok) {
-                navigate("/main");
+                navigate("/main/diaper");
             } else {
                 navigate("/");
-                setError('Add Diaper Log Failed - Try Again');
+                setError('Edit Diaper Log Failed - Try Again');
             }
         } catch (err) {
             console.error(err);
@@ -82,7 +107,7 @@ export default function AddDiaperLog({activeBaby, user}) {
                 </Box>
             ) : ( */}
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
-                  <Typography variant="h5">Add {activeBaby.name}'s Diaper Log</Typography>
+                  <Typography variant="h5">Edit {activeBaby.name}'s Diaper Log</Typography>
                   <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>
                     <Avatar src="/images/peeicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "pee" ? "2px solid #3f51b5" : "none" }} onClick={()=> setDiaperType("pee")}/>
                     <Avatar src="/images/pooicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "poo" ? "2px solid #3f51b5" : "none"}} onClick={()=> setDiaperType("poo")}/>
@@ -127,7 +152,7 @@ export default function AddDiaperLog({activeBaby, user}) {
                         color="primary"
                         sx={{ marginTop: 2 }}
                     >
-                        Add
+                        Save
                     </Button>
                     <Typography
                         variant="body2"

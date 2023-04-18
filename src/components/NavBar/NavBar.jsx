@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -20,9 +21,11 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import NavBarDrawer from '../NavBarDrawer/NavBarDrawer';
+import { isTokenValid } from '../../utilities/users-service';
 
 export default function NavBar({user, setUser}) {
   const navigate = useNavigate();
+  const [isSessionValid, setIsSessionValid] = useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -33,6 +36,21 @@ export default function NavBar({user, setUser}) {
   const isLoginMenuOpen = Boolean(loginMenuAnchorEl);
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+
+  useEffect(() => {
+    const checkTokenValidity = () => {
+      if (!isTokenValid() && isSessionValid) {
+        setIsSessionValid(false);
+        setUser(null);
+      } else if (isTokenValid() && !isSessionValid) {
+        setIsSessionValid(true);
+      }
+    };
+    const intervalId = setInterval(checkTokenValidity, 30 * 1000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isSessionValid, setUser]);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);

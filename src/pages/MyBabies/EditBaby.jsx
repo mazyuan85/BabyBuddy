@@ -13,10 +13,14 @@ export default function EditBaby({user}) {
     const [dateOfBirth, setDateOfBirth] = useState(dayjs());
     const [imageFile, setImageFile] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
-    const navgiate = useNavigate();
+    const navigate = useNavigate();
     const { babyId } = useParams();
 
     useEffect(() => {
+        if (!user) {
+            navigate("/");
+            return;
+        }
         const fetchBaby = async () => {
             try {
                 const token = localStorage.getItem("token");
@@ -32,12 +36,16 @@ export default function EditBaby({user}) {
                     setDateOfBirth(dayjs(responseBody.dateOfBirth));
                     setPreviewImage(responseBody.imageURL);
                 }
+                else {
+                    navigate("/")
+                    setError('Retrieving Baby Records Failed - Try Again');
+                }
             } catch (err) {
                 console.error(err)
             }
         }
         fetchBaby();
-    },[babyId]);
+    },[babyId, user, navigate]);
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -100,7 +108,7 @@ export default function EditBaby({user}) {
 
             if (response.ok) {
                 const responseBody = await response.json();
-                navgiate("/main/mybabies");
+                navigate("/main/mybabies");
             } else {
                 throw new Error("Failed to add baby");
             }
@@ -124,7 +132,7 @@ export default function EditBaby({user}) {
 
             if (response.ok) {
                 const responseBody = await response.json();
-                navgiate("/main/mybabies");
+                navigate("/main/mybabies");
             } else {
                 throw new Error("Failed to delete baby");
             }

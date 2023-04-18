@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMediaQuery, Container, Box, Avatar, Typography, CircularProgress, List, ListItem, ListItemAvatar, ListItemText, IconButton } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from "dayjs";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
@@ -8,7 +8,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'rec
 
 
 
-export default function StatusDiaperLog ({activeBaby}) {
+
+export default function StatusDiaperLog ({user, activeBaby}) {
     const [diaperLogs, setDiaperLogs] = useState([]);
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(true);
@@ -16,9 +17,14 @@ export default function StatusDiaperLog ({activeBaby}) {
     const [selectedLogId, setSelectedLogId] = useState(null);
     const [visibleDataRange, setVisibleDataRange] = useState({ start: 0, end: 7 });
     const isMobile = useMediaQuery("(max-width:600px)"); 
+    const navigate = useNavigate();
 
 
     useEffect(() => {
+        if (!user) {
+            navigate("/");
+            return;
+        }
         async function fetchData() {
             try {
                 const token = localStorage.getItem("token");
@@ -33,6 +39,7 @@ export default function StatusDiaperLog ({activeBaby}) {
                     const data = await response.json();
                     setDiaperLogs(data);
                 } else {
+                    navigate("/");
                     setError('Retrieving Diaper Logs Failed - Try Again');
                 }
             } catch (err) {
@@ -41,7 +48,7 @@ export default function StatusDiaperLog ({activeBaby}) {
                 setIsLoading(false);
         }}
         fetchData();
-      }, []);
+      }, [user, navigate]);
 
     const groupedLogs = diaperLogs.reduce((acc, log) => {
         const date = dayjs(log.dateTime).format("L");
@@ -56,7 +63,7 @@ export default function StatusDiaperLog ({activeBaby}) {
     
     const generateChartData = (logs) => {
             return logs.reduce((acc, log) => {
-                  const date = new Date(log.dateTime).toLocaleDateString();
+                  const date = dayjs(log.dateTime).format("L");
                   if (!acc[date]) {
                         acc[date] = { date, poo: 0, pee: 0 };
           }
@@ -94,6 +101,9 @@ export default function StatusDiaperLog ({activeBaby}) {
             poo: undefined,
     }));
   
+    const formatBritishDate = (tick) => {
+        return dayjs(tick).format("DD/MM/YY");
+    };
 
     const handleDelete = async (logId) => {
         try {
@@ -153,7 +163,9 @@ export default function StatusDiaperLog ({activeBaby}) {
                 </Box>
             ) : (
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
-                  <Avatar src="/images/diapericon.png" sx={{width:"120px", height:"120px"}} />
+                  <Link to="/main/diaper/add">
+                    <Avatar src="/images/diapericon.png" sx={{width:"100px", height:"100px"}} />
+                  </Link>
                   <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}'s Diaper Logs</Typography>
                   <Box sx={{ width: "100%", mt: 3 }}>
                     <Typography variant="subtitle2">Poo Frequency Per Day</Typography>
@@ -169,7 +181,7 @@ export default function StatusDiaperLog ({activeBaby}) {
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
+                        <XAxis dataKey="date" tickFormatter={formatBritishDate}/>
                         <YAxis />
                         <Tooltip />
                         <Legend />
@@ -191,7 +203,7 @@ export default function StatusDiaperLog ({activeBaby}) {
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
+                        <XAxis dataKey="date" tickFormatter={formatBritishDate}/>
                         <YAxis />
                         <Tooltip />
                         <Legend />
@@ -219,8 +231,12 @@ export default function StatusDiaperLog ({activeBaby}) {
                         <List dense={true}>
                         {logs.map((log, index) => (
                             <ListItem key={index} secondaryAction={<IconButton edge="end" aria-label="delete" onClick={()=> handleClickOpen(log._id)}><DeleteIcon /></IconButton>}>
-                            <ListItemAvatar><Avatar src={log.type === "pee" ? "/images/peeicon.png" : "/images/pooicon.png"}></Avatar></ListItemAvatar>
-                            <ListItemText primary={dayjs(log.dateTime).format("h:mm A")} secondary={log.remarks ? log.remarks : null}></ListItemText>
+                            <Link to={`/main/diaper/edit/${log._id}`} style={{ textDecoration: "none", color:"inherit"}}>
+                                <ListItemAvatar><Avatar src={log.type === "pee" ? "/images/peeicon.png" : "/images/pooicon.png"}></Avatar></ListItemAvatar>
+                            </Link>
+                            <Link to={`/main/diaper/edit/${log._id}`} style={{ textDecoration: "none", color:"inherit"}}>
+                                <ListItemText primary={dayjs(log.dateTime).format("h:mm A")} secondary={log.remarks ? log.remarks : null}></ListItemText>
+                            </Link>
                             </ListItem>
                         ))}
                         </List>

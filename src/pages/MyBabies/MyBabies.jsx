@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { Container, Typography, Box, Button, Card, CardHeader, CardContent, Avatar, CircularProgress } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
 
 export default function MyBabies({user}) {
     const [babies, setBabies] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if (!user) {
+            navigate("/");
+            return;
+        }
         const fetchBabies = async () => {
             try {
                 const response = await fetch("/api/main/mybabies", {
@@ -22,6 +27,7 @@ export default function MyBabies({user}) {
                     const fetchedBabies = await response.json();
                     setBabies(fetchedBabies);
                 } else {
+                    navigate("/");
                     throw new Error("Failed to fetch babies.");
                 }
             } catch (error) {
@@ -32,7 +38,7 @@ export default function MyBabies({user}) {
         };
 
         fetchBabies();
-    }, []);
+    }, [user, navigate]);
 
     return (
         <Container maxWidth="sm" disableGutters>

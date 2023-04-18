@@ -14,6 +14,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import "dayjs/locale/en-gb";
 import AddDiaperLog from './pages/Diaper/AddDiaperLog';
 import StatusDiaperLog from './pages/Diaper/StatusDiaperLog';
+import EditDiaperLog from './pages/Diaper/EditDiaperLog';
 
 const theme = createTheme({
     palette: {
@@ -69,7 +70,7 @@ export default function App() {
             <Route path="/main/mybabies/edit/:babyId" element={<EditBaby user={user}/>}></Route>
             <Route path="/main/diaper" element={<StatusDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/diaper/add" element={<AddDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
-            {/* <Route path="/main" element={<Dashboard user={user}/>}></Route> */}
+            <Route path="/main/diaper/edit/:id" element={<EditDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/users/login" element={<LoginPage setUser={setUser}/>}></Route>
             <Route path="/users/signup" element={<SignUpPage setUser={setUser}/>}></Route>
           </Routes>

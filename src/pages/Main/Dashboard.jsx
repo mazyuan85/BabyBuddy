@@ -1,14 +1,22 @@
 import { useState, useEffect } from "react";
-import { Container, Typography, Box, Avatar, CircularProgress, MenuItem, Select } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useMediaQuery, Container, Typography, Box, Avatar, CircularProgress, MenuItem, Select, Card, CardContent, CardMedia } from "@mui/material";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
 export default function Dashboard({user, setActiveBaby, activeBaby}) {
   const [babies, setBabies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-//   const [activeBaby, setActiveBaby] = useState({})
+  const [lastDiaperLog, setLastDiaperLog] = useState("");
+  const isMobile = useMediaQuery("(max-width:600px)");
+  const location = useLocation();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
+      if (!user) {
+        navigate("/");
+        return;
+    }
       const fetchBabies = async () => {
           try {
               const response = await fetch("/api/main/mybabies", {
@@ -25,6 +33,7 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
                   setActiveBaby(fetchedBabies[0]);
                   }
               } else {
+                  navigate("/");
                   throw new Error("Failed to fetch babies.");
               }
           } catch (error) {
@@ -35,7 +44,33 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
       };
 
       fetchBabies();
-  }, []);
+  }, [user, navigate]);
+
+  useEffect(() => {
+    const fetchLastDiaperLogs = async () => {
+      try {
+        const response = await fetch(`/api/main/diaper/lastdiaperlog/${activeBaby._id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+  
+        if (response.ok) {
+          const lastDiaperLogs = await response.json();
+          setLastDiaperLog(lastDiaperLogs)
+        } else {
+          throw new Error("Failed to fetch last diaper logs.");
+        }
+      } catch (error) {
+        console.error("Error fetching last diaper logs:", error);
+      }
+    };
+  
+    if (activeBaby) {
+      fetchLastDiaperLogs();
+    }
+  }, [activeBaby, location]);
 
   const handleChange = (event) => {
     const selectedBaby = babies.find((baby) => baby.name === event.target.value);
@@ -60,9 +95,9 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
                   </Box>
               ) : (
                   <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
-                    <Avatar src={activeBaby?.imageURL} sx={{width:"180px", height:"180px"}} />
-                    <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}</Typography>
-                    <Typography variant="subtitle1">Date of Birth: {dayjs(activeBaby.dateOfBirth).format("DD MMM YYYY")}</Typography>            
+                    <Avatar src={activeBaby?.imageURL} sx={{width: isMobile ? "120px" : "180px", height: isMobile? "120px" : "180px"}} />
+                   
+                    {isMobile ? <></> :  <><Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}</Typography><Typography variant="subtitle1">Date of Birth: {dayjs(activeBaby.dateOfBirth).format("DD MMM YYYY")}</Typography></>}
                     <Select
                       labelId="baby-select-label"
                       value={activeBaby.name}
@@ -76,12 +111,48 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
                       ))}
                     </Select>
                     <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>
-                        <Avatar src="/images/bottleicon.png" sx={{width:"90px", height:"90px"}}/>
+                        <Avatar src="/images/bottleicon.png" sx={{width:"80px", height:"80px"}}/>
                       <Link to="/main/diaper/add">
-                      <Avatar src="/images/diapericon.png" sx={{width:"90px", height:"90px"}}/>
+                      <Avatar src="/images/diapericon.png" sx={{width:"80px", height:"80px"}}/>
                       </Link>
-                      <Avatar src="/images/sleepicon.png" sx={{width:"90px", height:"90px"}}/>
+                      <Avatar src="/images/sleepicon.png" sx={{width:"80px", height:"80px"}}/>
                     </Box>
+                    <Box sx={{display:"flex", width:"100%", flexDirection:"column", marginTop:2}}>
+                    <Box component={Link} to="/main/feed" sx={{ textDecoration: "none", color: "inherit", padding: 0.5 }}>
+                        <Card sx={{display:"flex", flexDirection:"row"}}>
+                          <Avatar src="/images/bottleicon.png" sx={{width:"60px", height:"60px", alignSelf:"center", marginLeft:1}}/>
+                          <CardContent >
+                            <Typography variant="h6">
+                              Last Feed ??
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Box>
+                    <Box component={Link} to="/main/diaper" sx={{ textDecoration: "none", color: "inherit", padding:0.5}}>
+                        <Card sx={{display:"flex", flexDirection:"row"}}>
+                          <Avatar src={(lastDiaperLog.type === "pee") ? "/images/peeicon.png" : "/images/pooicon.png"} sx={{width:"60px", height:"60px", alignSelf:"center", marginLeft:1}}/>
+                          <CardContent >
+                            <Typography variant="h6">
+                              {dayjs(lastDiaperLog.dateTime).format("h:MM A")}
+                            </Typography>
+                            <Typography variant="body2">
+                              {dayjs(lastDiaperLog.dateTime).format("DD/MM/YY")}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Box>
+                      <Box component={Link} to="/main/sleep" sx={{ textDecoration: "none", color: "inherit", padding: 0.5 }}>
+                        <Card sx={{display:"flex", flexDirection:"row"}}>
+                          <Avatar src="/images/sleepicon.png" sx={{width:"60px", height:"60px", alignSelf:"center", marginLeft:1}}/>
+                          <CardContent >
+                            <Typography variant="h6">
+                              Last Sleep ??
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Box>
+
+                     </Box>
                   </Box>
               )}
           </Box>

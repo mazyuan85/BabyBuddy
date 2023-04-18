@@ -74,7 +74,7 @@ const editBaby = async (req, res) => {
         return res.json(baby);
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: "An error occured while retrieving baby's details."})
+        return res.status(500).json({ message: "An error occured while editing baby's details."})
     }
 }
 
@@ -83,7 +83,6 @@ const deleteBaby = async (req, res) => {
         const { user_id } = req.body;
         const baby = await Baby.findById(req.params.id);
         const user = await User.findById(user_id);
-        console.log(user)
         
         if (!baby) {
             return res.status(404).json({ message: "Baby not found" });
@@ -137,6 +136,51 @@ const deleteDiaperLog = async (req, res) => {
     }
 }
 
+const lastDiaperLog = async (req, res) => {
+    try {
+        const babyId = req.params.id;
+        const lastDiaperLog = await DiaperLog.findOne({baby: babyId}).sort({dateTime:-1})
+        res.status(200).json(lastDiaperLog);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to fetch last diaper logs."})
+    }
+}
+
+const getSingleDiaperLog = async (req, res) => {
+    try {
+        const singleDiaperLog = await DiaperLog.findById(req.params.id);
+        if (!singleDiaperLog) {
+          return res.status(404).json({ message: "Diaper Log not found" });
+        }
+        return res.status(200).json(singleDiaperLog);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while retrieving diaper log details."})
+    }
+}
+
+const editSingleDiaperLog = async (req, res) => {
+    try {
+        const diaperData = req.body;
+        const diaper = await DiaperLog.findById(req.params.id);
+        
+        if (!diaper) {
+            return res.status(404).json({ message: "Diaper not found" });
+        }
+        diaper.type = diaperData.type;
+        diaper.remarks = diaperData.remarks;
+        diaper.dateTime = diaperData.dateTime;
+      
+        await diaper.save();
+
+        return res.json(diaper);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while editing diaper log details."})
+    }
+}
+
 module.exports ={
     index,
     showBabies,
@@ -147,4 +191,7 @@ module.exports ={
     getDiaperLog,
     addDiaperLog,
     deleteDiaperLog,
+    lastDiaperLog,
+    getSingleDiaperLog,
+    editSingleDiaperLog,
 }

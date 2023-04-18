@@ -12,7 +12,14 @@ export default function AddBaby({user, onBabyAdded}) {
     const [dateOfBirth, setDateOfBirth] = useState(dayjs());
     const [imageFile, setImageFile] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
-    const navgiate = useNavigate();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/");
+            return;
+        }
+      }, [user, navigate]);
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
@@ -82,8 +89,9 @@ export default function AddBaby({user, onBabyAdded}) {
                 const responseBody = await response.json();
                 const newBaby = responseBody.baby;
                 onBabyAdded(newBaby);
-                navgiate("/main/mybabies");
+                navigate("/main/mybabies");
             } else {
+                navigate("/");
                 throw new Error("Failed to add baby");
             }
         } catch (err) {
