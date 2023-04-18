@@ -130,13 +130,13 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
                       </Box>
                     <Box component={Link} to="/main/diaper" sx={{ textDecoration: "none", color: "inherit", padding:0.5}}>
                         <Card sx={{display:"flex", flexDirection:"row"}}>
-                          <Avatar src={(lastDiaperLog.type === "pee") ? "/images/peeicon.png" : "/images/pooicon.png"} sx={{width:"60px", height:"60px", alignSelf:"center", marginLeft:1}}/>
+                          <Avatar src={(lastDiaperLog?.type === "pee") ? "/images/peeicon.png" : (lastDiaperLog?.type === "poo") ? "/images/pooicon.png" : "images/diapericon.png"} sx={{width:"60px", height:"60px", alignSelf:"center", marginLeft:1}}/>
                           <CardContent >
                             <Typography variant="h6">
-                              {dayjs(lastDiaperLog.dateTime).format("h:MM A")}
+                              {lastDiaperLog?.dateTime ? dayjs(lastDiaperLog.dateTime).format("h:MM A") : "No data yet"}
                             </Typography>
                             <Typography variant="body2">
-                              {dayjs(lastDiaperLog.dateTime).format("DD/MM/YY")}
+                              {lastDiaperLog?.dateTime ? dayjs(lastDiaperLog.dateTime).format("DD/MM/YY") : "No data yet"}
                             </Typography>
                           </CardContent>
                         </Card>
