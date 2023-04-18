@@ -21,7 +21,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            <ListItem key="Dashboard" component={Link} to="/main" sx={{textDecoration:"none", "&:visited": {color: "inherit"}}}>
+            <ListItem key="Dashboard" component={Link} to="/main" sx={{textDecoration:"none", color: "inherit"}}>
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
@@ -33,7 +33,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Feed Log" />
             </ListItem>
-            <ListItem key="Diaper" component={Link} to="/main/diaper/" sx={{textDecoration:"none", "&:visited": {color: "inherit"}}}>
+            <ListItem key="Diaper" component={Link} to="/main/diaper/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
                 <BabyChangingStationIcon />
               </ListItemIcon>

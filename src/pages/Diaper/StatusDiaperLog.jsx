@@ -44,7 +44,7 @@ export default function StatusDiaperLog ({activeBaby}) {
       }, []);
 
     const groupedLogs = diaperLogs.reduce((acc, log) => {
-        const date = new Date(log.dateTime).toLocaleDateString();
+        const date = dayjs(log.dateTime).format("L");
         if (!acc[date]) {
             acc[date] = [];
         }
