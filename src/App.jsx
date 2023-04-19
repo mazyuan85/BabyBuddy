@@ -15,6 +15,8 @@ import "dayjs/locale/en-gb";
 import AddDiaperLog from './pages/Diaper/AddDiaperLog';
 import StatusDiaperLog from './pages/Diaper/StatusDiaperLog';
 import EditDiaperLog from './pages/Diaper/EditDiaperLog';
+import AddSleepLog from './pages/Sleep/AddSleepLog';
+import StatusSleepLog from './pages/Sleep/StatusSleepLog';
 
 const theme = createTheme({
     palette: {
@@ -71,6 +73,8 @@ export default function App() {
             <Route path="/main/diaper" element={<StatusDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/diaper/add" element={<AddDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/diaper/edit/:id" element={<EditDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/sleep" element={<StatusSleepLog user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/sleep/add" element={<AddSleepLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/users/login" element={<LoginPage setUser={setUser}/>}></Route>
             <Route path="/users/signup" element={<SignUpPage setUser={setUser}/>}></Route>
           </Routes>

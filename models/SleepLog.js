@@ -15,7 +15,11 @@ const sleepLogSchema = new Schema({
     },
     remarks: {
         type: String,
-    }
+    },
+    isSleeping: {
+        type: Boolean,
+        default: false
+    },
 }, {
     timestamps: true
 });

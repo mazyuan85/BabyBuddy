@@ -277,7 +277,7 @@ export default function NavBar({user, setUser}) {
           ) : (
             <></>
           )}
-          <Link to="/">
+          <Link to={user ? "/main" : "/"}>
           <img src="/images/logo_nav.png" height="65" alt="BabyBuddy Logo"/>
           </Link>
           <Box sx={{ flexGrow: 1 }} />

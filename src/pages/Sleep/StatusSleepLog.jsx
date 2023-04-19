@@ -9,8 +9,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'rec
 
 
 
-export default function StatusDiaperLog ({user, activeBaby}) {
-    const [diaperLogs, setDiaperLogs] = useState([]);
+export default function StatusSleepLog ({user, activeBaby}) {
+    const [sleepLogs, setSleepLogs] = useState([]);
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [open, setOpen] = useState(false);
@@ -28,7 +28,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
         async function fetchData() {
             try {
                 const token = localStorage.getItem("token");
-                const response = await fetch(`/api/main/diaper?baby=${activeBaby._id}`, {
+                const response = await fetch(`/api/main/sleep?baby=${activeBaby._id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -37,7 +37,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setDiaperLogs(data);
+                    setSleepLogs(data);
                 } else {
                     navigate("/");
                     setError('Retrieving Diaper Logs Failed - Try Again');
@@ -50,28 +50,72 @@ export default function StatusDiaperLog ({user, activeBaby}) {
         fetchData();
       }, [user, navigate]);
 
-    const groupedLogs = diaperLogs.reduce((acc, log) => {
-        const date = dayjs(log.dateTime).format("L");
-        if (!acc[date]) {
-            acc[date] = [];
+    const groupedLogs = sleepLogs.reduce((acc, log) => {
+        const key = dayjs(log.startDateTime).format("L");
+        if (!acc[key]) {
+            acc[key] = [];
         }
-        acc[date].push(log);
+        acc[key].push({
+            ...log,
+            displayTime: log.startDateTime,
+            isSleeping: true,
+        });
+
+        if (log.endDateTime) {
+            const endKey = dayjs(log.endDateTime).format("L");
+            if (!acc[endKey]) {
+                acc[endKey] = [];
+            }
+            acc[endKey].push({
+                ...log,
+                displayTime: log.endDateTime,
+                isSleeping: false,
+            })
+        }
         return acc;
     }, {});
 
-  
+    Object.entries(groupedLogs).forEach(([date, logs]) => {
+        logs.sort((a, b) => new Date(b.displayTime) - new Date(a.displayTime));
+    });
+
+    const sortedGroupedLogs = Object.fromEntries(
+        Object.entries(groupedLogs).sort((a, b) => new Date(b[0]) - new Date(a[0]))
+      );
+
     
     const generateChartData = (logs) => {
-            return logs.reduce((acc, log) => {
-                  const date = dayjs(log.dateTime).format("L");
-                  if (!acc[date]) {
-                        acc[date] = { date, poo: 0, pee: 0 };
-          }
-
-          acc[date][log.type]++;
-          return acc;
-        }, {});
+        return logs.reduce((acc, log) => {
+            const start = dayjs(log.startDateTime);
+            const end = dayjs(log.endDateTime || new Date());
+        
+            let currentDate = start.startOf('day');
+            while (currentDate.isBefore(end, 'day') || currentDate.isSame(end, 'day')) {
+              const date = currentDate.format("L");
+              if (!acc[date]) {
+                acc[date] = { date, hoursPerDay: 0 };
+              }
+        
+              let currentStartDate = start.isSame(currentDate, 'day') ? start : currentDate.clone().startOf('day');
+              let currentEndDate = currentDate.clone().endOf('day');
+              if (end.isBefore(currentEndDate)) {
+                currentEndDate = end;
+              }
+              
+              const durationInHours = currentEndDate.diff(currentStartDate, 'hour');
+              acc[date].hoursPerDay += durationInHours;
+        
+              currentDate = currentDate.add(1, 'day').startOf('day');
+            }
+        
+            return acc;
+          }, {});
       };
+
+    const sleepDurationData = Object.values(generateChartData(sleepLogs))
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(visibleDataRange.start, visibleDataRange.end)
+        .reverse();
 
     const updateVisibleDataRange = (direction) => {
         const newDataRange = { ...visibleDataRange };
@@ -85,22 +129,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
         setVisibleDataRange(newDataRange);
     };
       
-    const pooFrequencyData = Object.values(generateChartData(diaperLogs))
-        .slice(visibleDataRange.start, visibleDataRange.end)
-        .reverse()
-        .map((entry) => ({
-            ...entry,
-            pee: undefined,
-    }));
-  
-    const peeFrequencyData = Object.values(generateChartData(diaperLogs))
-        .slice(visibleDataRange.start, visibleDataRange.end)
-        .reverse()
-        .map((entry) => ({
-            ...entry,
-            poo: undefined,
-    }));
-  
+ 
     const formatBritishDate = (tick) => {
         return dayjs(tick).format("DD/MM/YY");
     };
@@ -108,7 +137,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
     const handleDelete = async (logId) => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`/api/main/diaper/delete/${logId}`, {
+            const response = await fetch(`/api/main/sleep/delete/${logId}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -117,8 +146,8 @@ export default function StatusDiaperLog ({user, activeBaby}) {
             });
 
             if (response.ok) {
-                const remainingLogs = diaperLogs.filter((log) => log._id !== logId);
-                setDiaperLogs(remainingLogs);
+                const remainingLogs = sleepLogs.filter((log) => log._id !== logId);
+                setSleepLogs(remainingLogs);
             } else {
                 throw new Error("Failed to delete diaper log record");
             }
@@ -163,16 +192,16 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                 </Box>
             ) : (
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
-                  <Link to="/main/diaper/add">
-                    <Avatar src="/images/diapericon.png" sx={{width:"100px", height:"100px"}} />
+                  <Link to="/main/sleep/add">
+                    <Avatar src="/images/sleepicon.png" sx={{width:"100px", height:"100px"}} />
                   </Link>
-                  <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}'s Diaper Logs</Typography>
+                  <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}'s Sleep Logs</Typography>
                   <Box sx={{ width: "100%", mt: 3 }}>
-                    <Typography variant="subtitle2">Poo Frequency Per Day</Typography>
+                    <Typography variant="subtitle2">Sleep Duration (hours) Per Day</Typography>
                     <BarChart
                         width={isMobile ? 360 : 600}
                         height={200}
-                        data={pooFrequencyData}
+                        data={sleepDurationData}
                         margin={{
                             top: 15,
                             right: 30,
@@ -185,34 +214,13 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Bar dataKey="poo" fill="#82ca9d" />
+                        <Bar dataKey="hoursPerDay" fill="#82ca9d" />
                     </BarChart>
                     </Box>
 
-                    <Box sx={{ width: "100%", mt: 3 }}>
-                    <Typography variant="subtitle2">Pee Frequency Per Day</Typography>
-                    <BarChart
-                        width={isMobile ? 360 : 600}
-                        height={200}
-                        data={peeFrequencyData}
-                        margin={{
-                            top: 15,
-                            right: 30,
-                            left: 5,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" tickFormatter={formatBritishDate}/>
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="pee" fill="#8884d8" />
-                    </BarChart>
-                    </Box>
-                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                           <Button
-                              disabled={visibleDataRange.end >= Object.values(generateChartData(diaperLogs)).length}
+                              disabled={visibleDataRange.end >= Object.values(generateChartData(sleepLogs)).length}
                               onClick={() => updateVisibleDataRange("left")}
                           >
                               &lt; Previous
@@ -223,20 +231,16 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                           >
                               Next &gt;
                           </Button>
-                          </Box>
+                          </Box> 
                   <List  sx={{width:"80%"}}>
-                    {Object.entries(groupedLogs).map(([date, logs]) => (
+                    {Object.entries(sortedGroupedLogs).map(([date, logs]) => (
                     <Box key={date}>
                         <Typography variant="subtitle1">{dayjs(date).format("DD MMM YYYY")}</Typography>
                         <List dense={true}>
                         {logs.map((log, index) => (
                             <ListItem key={index} secondaryAction={<IconButton edge="end" aria-label="delete" onClick={()=> handleClickOpen(log._id)}><DeleteIcon /></IconButton>}>
-                            <Link to={`/main/diaper/edit/${log._id}`} style={{ textDecoration: "none", color:"inherit"}}>
-                                <ListItemAvatar><Avatar src={log.type === "pee" ? "/images/peeicon.png" : "/images/pooicon.png"}></Avatar></ListItemAvatar>
-                            </Link>
-                            <Link to={`/main/diaper/edit/${log._id}`} style={{ textDecoration: "none", color:"inherit"}}>
-                                <ListItemText primary={dayjs(log.dateTime).format("h:mm A")} secondary={log.remarks ? log.remarks : null}></ListItemText>
-                            </Link>
+                            <ListItemAvatar><Avatar src={log.isSleeping ? "/images/sleepicon.png" : "/images/sunicon.png"}></Avatar></ListItemAvatar>
+                            <ListItemText primary={dayjs(log.displayTime).format("h:mm A")} secondary={log.remarks ? log.remarks : null}></ListItemText>
                             </ListItem>
                         ))}
                         </List>
@@ -247,10 +251,10 @@ export default function StatusDiaperLog ({user, activeBaby}) {
             )}
         </Box>
         <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Delete Diaper Log</DialogTitle>
+            <DialogTitle>Delete Sleep Log</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                Are you sure you want to delete this diaper log?
+                Are you sure you want to delete this sleep log?
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

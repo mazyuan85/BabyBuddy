@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Baby = require("../models/Baby");
 const DiaperLog = require("../models/DiaperLog");
+const SleepLog = require("../models/SleepLog");
 const cloudinary = require("../config/cloudinaryConfig");
 const FormData = require('form-data');
 
@@ -181,6 +182,99 @@ const editSingleDiaperLog = async (req, res) => {
     }
 }
 
+const fetchSleepStatus = async (req, res) => {
+    try {
+    const babyId = req.params.id;
+    const lastSleepLog = await SleepLog.findOne({ baby: babyId}).sort({createdAt:-1});
+
+    return res.json(lastSleepLog)
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while retrieving sleep status"})
+    }
+}
+
+const addSleepLog = async (req, res) => {
+    try {
+        const sleepData = req.body;
+        const ongoingSleepLog = await SleepLog.findOne({ baby: sleepData.baby, isSleeping: true });
+        if (ongoingSleepLog) {
+            return res.status(500).json({ message: "This sleep log has already been added."})
+        }
+        const newSleepLog = new SleepLog({
+            baby: sleepData.baby,
+            startDateTime: sleepData.startDateTime,
+            remarks: sleepData.remarks,
+            isSleeping: true,
+        })
+        await newSleepLog.save();
+        return res.json(newSleepLog)
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while adding sleep log."})
+    }
+}
+
+const endSleepLog = async (req, res) => {
+    try {
+        const sleepData = req.body;
+        const unclosedSleepLog = await SleepLog.findOne({ baby: sleepData.baby, isSleeping: true });
+        if (!unclosedSleepLog) {
+            return res.status(500).json({ message: "All sleep logs have already been closed."})
+        }
+        const startDateTime = new Date(unclosedSleepLog.startDateTime);
+        const endDateTime = new Date(sleepData.endDateTime);
+
+        if (startDateTime > endDateTime) {
+            return res.status(500).json({ message: "Baby cannot wake up in the past!"})
+        }
+        const closeSleepLog = await SleepLog.updateOne(
+            { _id: unclosedSleepLog._id},
+            { isSleeping: false, endDateTime: sleepData.endDateTime, remarks: sleepData.remarks}
+        )
+        return res.json(closeSleepLog)
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while closing sleep log."})
+    }
+}
+
+const lastSleepLog = async (req, res) => {
+    try {
+        const babyId = req.params.id;
+        const lastSleepLog = await SleepLog.findOne({baby: babyId}).sort({startDateTime:-1})
+        res.status(200).json(lastSleepLog);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to fetch last sleep log."})
+    }
+}
+
+const getSleepLog = async (req, res) => {
+    try {
+        const babyId = req.query.baby;
+        if (!babyId) {
+            return res.status(400).json({ message: "Missing baby ID in query"})
+        }
+        const sleepLogs = await SleepLog.find({baby: babyId}).sort({ dateTime: -1})
+        res.status(200).json(sleepLogs);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error retrieving sleep logs" })
+    }
+}
+
+const deleteSleepLog = async (req, res) => {
+    try {
+        const sleepLog = req.params.id;
+        await SleepLog.findByIdAndDelete(sleepLog)
+        return res.status(201).json({ message: "Sleep Log deleted."})
+    } catch (err) {
+        return res.status(500).json({ message: "An error occured while deleting the sleep log."})
+    }
+}
+
+
 module.exports ={
     index,
     showBabies,
@@ -194,4 +288,10 @@ module.exports ={
     lastDiaperLog,
     getSingleDiaperLog,
     editSingleDiaperLog,
+    fetchSleepStatus,
+    addSleepLog,
+    endSleepLog,
+    lastSleepLog,
+    getSleepLog,
+    deleteSleepLog,
 }
