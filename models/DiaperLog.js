@@ -17,6 +17,7 @@ const diaperLogSchema = new Schema({
     },
     remarks: {
         type: String,
+        maxLength: 200
     }
 }, {
     timestamps: true

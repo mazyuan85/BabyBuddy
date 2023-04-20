@@ -15,6 +15,7 @@ const sleepLogSchema = new Schema({
     },
     remarks: {
         type: String,
+        maxLength: 200,
     },
     isSleeping: {
         type: Boolean,

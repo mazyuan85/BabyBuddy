@@ -168,7 +168,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                   </Link>
                   <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}'s Diaper Logs</Typography>
                   <Box sx={{ width: "100%", mt: 3 }}>
-                    <Typography variant="subtitle2">Poo Frequency Per Day</Typography>
+                    <Typography variant="subtitle2">Poo Frequency /day</Typography>
                     <BarChart
                         width={isMobile ? 360 : 600}
                         height={200}
@@ -190,7 +190,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                     </Box>
 
                     <Box sx={{ width: "100%", mt: 3 }}>
-                    <Typography variant="subtitle2">Pee Frequency Per Day</Typography>
+                    <Typography variant="subtitle2">Pee Frequency /day</Typography>
                     <BarChart
                         width={isMobile ? 360 : 600}
                         height={200}

@@ -17,6 +17,10 @@ import StatusDiaperLog from './pages/Diaper/StatusDiaperLog';
 import EditDiaperLog from './pages/Diaper/EditDiaperLog';
 import AddSleepLog from './pages/Sleep/AddSleepLog';
 import StatusSleepLog from './pages/Sleep/StatusSleepLog';
+import AddFeedLog from './pages/Feed/AddFeedLog';
+import StatusFeedLog from './pages/Feed/StatusFeedLog';
+import EditFeedLog from './pages/Feed/EditFeedLog';
+import MilestoneChecklist from './pages/Milestones/MilestoneChecklist';
 
 const theme = createTheme({
     palette: {
@@ -75,6 +79,10 @@ export default function App() {
             <Route path="/main/diaper/edit/:id" element={<EditDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/sleep" element={<StatusSleepLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/sleep/add" element={<AddSleepLog user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/feed/edit/:id" element={<EditFeedLog user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/feed/add" element={<AddFeedLog user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/feed" element={<StatusFeedLog user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/milestones" element={<MilestoneChecklist user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/users/login" element={<LoginPage setUser={setUser}/>}></Route>
             <Route path="/users/signup" element={<SignUpPage setUser={setUser}/>}></Route>
           </Routes>

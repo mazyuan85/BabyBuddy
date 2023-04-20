@@ -20,6 +20,14 @@ router.get("/sleep/add/:id", ensureLoggedIn, mainController.fetchSleepStatus);
 router.delete("/sleep/delete/:id", ensureLoggedIn, mainController.deleteSleepLog);
 router.get("/sleep/lastsleeplog/:id", mainController.lastSleepLog);
 router.get("/sleep", ensureLoggedIn, mainController.getSleepLog);
+router.post("/feed/add", ensureLoggedIn, mainController.addFeedLog);
+router.get("/feed/edit/:id", ensureLoggedIn, mainController.getSingleFeedLog);
+router.put("/feed/edit/:id", ensureLoggedIn, mainController.editSingleFeedLog);
+router.get("/feed/lastfeedlog/:id", ensureLoggedIn, mainController.lastFeedLog);
+router.delete("/feed/delete/:id", ensureLoggedIn, mainController.deleteFeedLog);
+router.get("/feed", ensureLoggedIn, mainController.getFeedLog);
+router.put("/milestones", ensureLoggedIn, mainController.updateMilestonesLog);
+router.get("/milestones", ensureLoggedIn, mainController.getMilestonesLog);
 router.get("/", ensureLoggedIn, mainController.index);
 
 module.exports = router;

@@ -17,7 +17,7 @@ const create = async (req, res) => {
     try {
     const user = await User.create(req.body);
     const payload = { user };
-    const token = jwt.sign(payload, JWT_SECRET, {expiresIn:60*60});
+    const token = jwt.sign(payload, JWT_SECRET, {expiresIn:60*600});
     res.status(201).json(token);
     } catch (error) {
         res.status(500).json(error);
@@ -36,7 +36,7 @@ const login = async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
           const payload = { user };
-          const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 60*60 });
+          const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 60*600 });
           res.status(200).json(token);
         } else {
           res.status(401).json({ message: "User or password is invalid" });

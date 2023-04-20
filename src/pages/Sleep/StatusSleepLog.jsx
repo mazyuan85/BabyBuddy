@@ -197,7 +197,7 @@ export default function StatusSleepLog ({user, activeBaby}) {
                   </Link>
                   <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}'s Sleep Logs</Typography>
                   <Box sx={{ width: "100%", mt: 3 }}>
-                    <Typography variant="subtitle2">Sleep Duration (hours) Per Day</Typography>
+                    <Typography variant="subtitle2">Sleep Duration (hours) /day</Typography>
                     <BarChart
                         width={isMobile ? 360 : 600}
                         height={200}

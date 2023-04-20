@@ -8,6 +8,7 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
   const [isLoading, setIsLoading] = useState(true);
   const [lastDiaperLog, setLastDiaperLog] = useState({});
   const [lastSleepLog, setLastSleepLog] = useState({});
+  const [lastFeedLog, setLastFeedLog] = useState({});
   const isMobile = useMediaQuery("(max-width:600px)");
   const location = useLocation();
   const navigate = useNavigate();
@@ -99,6 +100,32 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
     }
   }, [activeBaby, location]);
 
+  useEffect(() => {
+    const fetchLastFeedLogs = async () => {
+      try {
+        const response = await fetch(`/api/main/feed/lastfeedlog/${activeBaby._id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+  
+        if (response.ok) {
+          const lastFeedLogs = await response.json();
+          setLastFeedLog(lastFeedLogs)
+        } else {
+          throw new Error("Failed to fetch last feed log.");
+        }
+      } catch (error) {
+        console.error("Error fetching last feed log:", error);
+      }
+    };
+  
+    if (activeBaby) {
+      fetchLastFeedLogs();
+    }
+  }, [activeBaby, location]);
+
   const handleChange = (event) => {
     const selectedBaby = babies.find((baby) => baby.name === event.target.value);
     setActiveBaby(selectedBaby);
@@ -138,7 +165,9 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
                       ))}
                     </Select>
                     <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>
+                      <Link to="/main/feed/add">
                         <Avatar src="/images/bottleicon.png" sx={{width:"80px", height:"80px"}}/>
+                      </Link>
                       <Link to="/main/diaper/add">
                       <Avatar src="/images/diapericon.png" sx={{width:"80px", height:"80px"}}/>
                       </Link>
@@ -149,10 +178,13 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
                     <Box sx={{display:"flex", width:"100%", flexDirection:"column", marginTop:2}}>
                     <Box component={Link} to="/main/feed" sx={{ textDecoration: "none", color: "inherit", padding: 0.5 }}>
                         <Card sx={{display:"flex", flexDirection:"row"}}>
-                          <Avatar src="/images/bottleicon.png" sx={{width:"60px", height:"60px", alignSelf:"center", marginLeft:1}}/>
+                          <Avatar src={(lastFeedLog?.type === "bottle") ? "/images/bottleicon.png" : (lastFeedLog?.type === "breast") ? "/images/breastfeedingicon.png" : (lastFeedLog?.type === "food") ? "/images/foodicon.png" : (lastFeedLog?.type === "medicine") ? "/images/medicineicon.png" : "/images/bottleicon.png"} sx={{width:"60px", height:"60px", alignSelf:"center", marginLeft:1}}/>
                           <CardContent >
                             <Typography variant="h6">
-                              Last Feed ??
+                            {lastFeedLog?.dateTime ? dayjs(lastFeedLog.dateTime).format("h:mm A") : "No data yet"}
+                            </Typography>
+                            <Typography variant="body2">
+                            {lastFeedLog?.dateTime ? dayjs(lastFeedLog.dateTime).format("DD/MM/YY") : "No data yet"}
                             </Typography>
                           </CardContent>
                         </Card>

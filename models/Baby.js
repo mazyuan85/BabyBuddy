@@ -19,7 +19,10 @@ const babySchema = new Schema({
     imageURL: {
         type: String,
         maxLength: 500,
-    }
+    },
+    completedMilestones: [{
+        type: Number,
+    }]
 }, {
     timestamps: true
 });

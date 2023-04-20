@@ -27,7 +27,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Dashboard" />
             </ListItem>
-            <ListItem key="Feed">
+            <ListItem key="Feed" component={Link} to="/main/feed/" sx={{textDecoration:"none", color: "inherit"}} >
               <ListItemIcon>
                 <WaterDropIcon />
               </ListItemIcon>
@@ -39,7 +39,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Diaper Log" />
             </ListItem>
-            <ListItem key="Sleep">
+            <ListItem key="Sleep" component={Link} to="/main/sleep/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
                 <BedtimeIcon />
               </ListItemIcon>
@@ -52,7 +52,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Growth Tracker" />
             </ListItem>
-            <ListItem key="Milestones">
+            <ListItem key="Milestones" component={Link} to="/main/milestones/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
                 <MilestonesIcon />
               </ListItemIcon>

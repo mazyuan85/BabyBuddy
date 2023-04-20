@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Baby = require("../models/Baby");
 const DiaperLog = require("../models/DiaperLog");
 const SleepLog = require("../models/SleepLog");
+const FeedLog = require("../models/FeedLog");
 const cloudinary = require("../config/cloudinaryConfig");
 const FormData = require('form-data');
 
@@ -274,6 +275,130 @@ const deleteSleepLog = async (req, res) => {
     }
 }
 
+const addFeedLog = async (req, res) => {
+    try {
+        const newFeedLog = new FeedLog({...req.body})
+        await newFeedLog.save();
+        return res.status(201).json({ message: "Feed log added successfully."})
+        } catch (err) {
+            return res.status(500).json({ message: "An error occured while adding the feed log."})
+        }   
+}
+
+const lastFeedLog = async (req, res) => {
+    try {
+        const babyId = req.params.id;
+        const lastFeedLog = await FeedLog.findOne({baby: babyId}).sort({dateTime:-1})
+        res.status(200).json(lastFeedLog);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to fetch last feed log."})
+    }
+}
+
+const getFeedLog = async (req, res) => {
+    try {
+        const babyId = req.query.baby;
+        if (!babyId) {
+            return res.status(400).json({ message: "Missing baby ID in query"})
+        }
+        const feedLogs = await FeedLog.find({baby: babyId}).sort({ dateTime: -1})
+        res.status(200).json(feedLogs);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error retrieving feed logs" })
+    }
+}
+
+const deleteFeedLog = async (req, res) => {
+    try {
+        const feedLog = req.params.id;
+        await FeedLog.findByIdAndDelete(feedLog)
+        return res.status(201).json({ message: "Feed Log deleted."})
+    } catch (err) {
+        return res.status(500).json({ message: "An error occured while deleting the feed log."})
+    }
+}
+
+const getSingleFeedLog = async (req, res) => {
+    try {
+        const singleFeedLog = await FeedLog.findById(req.params.id);
+        if (!singleFeedLog) {
+          return res.status(404).json({ message: "Feed Log not found" });
+        }
+        return res.status(200).json(singleFeedLog);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while retrieving feed log details."})
+    }
+}
+
+const editSingleFeedLog = async (req, res) => {
+    try {
+        const feedData = req.body;
+        const feedLog = await FeedLog.findById(req.params.id);
+        
+        if (!feedLog) {
+            return res.status(404).json({ message: "Feed log not found" });
+        }
+        feedLog.type = feedData.type;
+        feedLog.remarks = feedData.remarks;
+        feedLog.dateTime = feedData.dateTime;
+        feedLog.duration = feedData.duration;
+        feedLog.volume = feedData.volume;
+        feedLog.food = feedData.food;
+        feedLog.medicine = feedData.medicine;
+      
+        await feedLog.save();
+
+        return res.json(feedLog);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while editing feed log details."})
+    }
+}
+
+const getMilestonesLog = async (req, res) => {
+    try {
+        const babyId = req.query.baby;
+        if (!babyId) {
+            return res.status(400).json({ message: "Missing baby ID in query"})
+        }
+        const milestones = await Baby.findOne({_id: babyId})
+        res.status(200).json(milestones.completedMilestones);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error retrieving sleep logs" })
+    }
+}
+
+const updateMilestonesLog = async (req, res) => {
+    try {
+        const babyId = req.query.baby;
+        if (!babyId) {
+            return res.status(400).json({ message: "Missing baby ID in query"})
+        }
+        const milestones = await Baby.findOne({_id: babyId})
+        const milestoneIndex = milestones.completedMilestones.findIndex(
+            (id) => id.toString() === req.body.completedMilestones.toString()
+          );
+        if (req.body.checked) {
+            if (milestoneIndex === -1) {
+                milestones.completedMilestones.push(req.body.completedMilestones);
+            }
+            } else {
+            if (milestoneIndex !== -1) {
+                milestones.completedMilestones.splice(milestoneIndex, 1);
+            }
+        }
+        await milestones.save();
+
+        res.status(200).json(milestones);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error retrieving sleep logs" })
+    }
+}
 
 module.exports ={
     index,
@@ -294,4 +419,12 @@ module.exports ={
     lastSleepLog,
     getSleepLog,
     deleteSleepLog,
+    addFeedLog,
+    lastFeedLog,
+    getFeedLog,
+    deleteFeedLog,
+    getSingleFeedLog,
+    editSingleFeedLog,
+    getMilestonesLog,
+    updateMilestonesLog,
 }

@@ -18,10 +18,14 @@ const feedLogSchema = new Schema({
     // for breastfeeding
     duration: {
         type: Number,
+        min: 0,
+        max: 60,
     },
     // for bottlefeeding
     volume: {
         type: Number,
+        min: 0,
+        max: 300,
     },
     food: [{
         type: String,
@@ -29,10 +33,11 @@ const feedLogSchema = new Schema({
     }],
     medicine: {
         type: String,
-        enum: ["paracetamol", "vitamins", "others"]
+        enum: ["paracetamol", "vitamins", "others",""]
     },
     remarks: {
         type: String,
+        maxLength: 200,
     }
 }, {
     timestamps: true
