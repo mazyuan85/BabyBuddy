@@ -6,6 +6,7 @@ import BedtimeIcon from '@mui/icons-material/Bedtime';
 import GrowthIcon from '@mui/icons-material/ShowChart';
 import MilestonesIcon from '@mui/icons-material/EmojiEvents';
 import AppointmentsIcon from '@mui/icons-material/Event';
+import AddIcon from '@mui/icons-material/Add';
 import { Link } from "react-router-dom";
 
 export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
@@ -27,11 +28,17 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Dashboard" />
             </ListItem>
-            <ListItem key="Feed" component={Link} to="/main/feed/" sx={{textDecoration:"none", color: "inherit"}} >
+            <ListItem key="Feed" component={Link} to="/main/feed/" sx={{textDecoration:"none", color: "inherit"}}>
               <ListItemIcon>
                 <WaterDropIcon />
               </ListItemIcon>
               <ListItemText primary="Feed Log" />
+            </ListItem>
+            <ListItem component={Link} to="/main/feed/add" sx={{ pl: 4, textDecoration: 'none', color: 'inherit' }}>
+              <ListItemIcon>
+                <AddIcon />
+              </ListItemIcon>
+              <ListItemText primary="Add Feed Log" />
             </ListItem>
             <ListItem key="Diaper" component={Link} to="/main/diaper/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
@@ -39,11 +46,23 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Diaper Log" />
             </ListItem>
+            <ListItem component={Link} to="/main/diaper/add" sx={{ pl: 4, textDecoration: 'none', color: 'inherit' }}>
+              <ListItemIcon>
+                <AddIcon />
+              </ListItemIcon>
+              <ListItemText primary="Add Diaper Log" />
+            </ListItem>
             <ListItem key="Sleep" component={Link} to="/main/sleep/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
                 <BedtimeIcon />
               </ListItemIcon>
               <ListItemText primary="Sleeping Log" />
+            </ListItem>
+            <ListItem component={Link} to="/main/sleep/add" sx={{ pl: 4, textDecoration: 'none', color: 'inherit' }}>
+              <ListItemIcon>
+                <AddIcon />
+              </ListItemIcon>
+              <ListItemText primary="Add Sleep Log" />
             </ListItem>
             <Divider key="divider5"/>
             <ListItem key="Growth">

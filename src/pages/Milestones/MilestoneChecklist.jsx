@@ -106,7 +106,7 @@ export default function MilestoneChecklist({user, activeBaby}) {
         <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center", marginTop: 2 }}>
         <Typography variant="h6">{activeBaby.name}'s Milestones</Typography>
         <Avatar src={activeBaby?.imageURL} sx={{width: isMobile ? "120px" : "180px", height: isMobile? "120px" : "180px", marginTop: 1}} />
-        <Typography variant="body1" sx={{marginTop:2}}>{calculateAgeInMonths(activeBaby.dateOfBirth)} Months Old</Typography>
+        <Typography variant="body1" sx={{marginTop:2}}>{calculateAgeInMonths(activeBaby.dateOfBirth)} Month(s) Old</Typography>
         </Box>
         <Grid item xs={12}>
             {filteredMilestones.map((milestone) => {
