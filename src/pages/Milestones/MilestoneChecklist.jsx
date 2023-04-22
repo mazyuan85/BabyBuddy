@@ -35,7 +35,6 @@ export default function MilestoneChecklist({user, activeBaby}) {
                 const data = await response.json();
                 setCompletedMilestones(data);
             } else {
-                navigate("/");
                 setError('Retrieving Milestones Failed - Try Again');
             }
         } catch (err) {
@@ -70,7 +69,7 @@ export default function MilestoneChecklist({user, activeBaby}) {
         });
     
         if (!response.ok) {
-          throw new Error('Failed to update milestone status');
+          setError('Failed to update milestone status');
         }
 
         const updatedMilestones = await response.json();
@@ -105,6 +104,13 @@ export default function MilestoneChecklist({user, activeBaby}) {
         </Grid>
         <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center", marginTop: 2 }}>
         <Typography variant="h6">{activeBaby.name}'s Milestones</Typography>
+        <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
         <Avatar src={activeBaby?.imageURL} sx={{width: isMobile ? "120px" : "180px", height: isMobile? "120px" : "180px", marginTop: 1}} />
         <Typography variant="body1" sx={{marginTop:2}}>{calculateAgeInMonths(activeBaby.dateOfBirth)} Month(s) Old</Typography>
         </Box>

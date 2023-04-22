@@ -9,6 +9,7 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
   const [lastDiaperLog, setLastDiaperLog] = useState({});
   const [lastSleepLog, setLastSleepLog] = useState({});
   const [lastFeedLog, setLastFeedLog] = useState({});
+  const [error, setError] = useState("");
   const isMobile = useMediaQuery("(max-width:600px)");
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,8 +36,7 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
                   setActiveBaby(fetchedBabies[0]);
                   }
               } else {
-                  navigate("/");
-                  throw new Error("Failed to fetch babies.");
+                  setError("Failed to fetch babies.");
               }
           } catch (error) {
               console.error("Error fetching babies:", error);
@@ -150,7 +150,13 @@ export default function Dashboard({user, setActiveBaby, activeBaby}) {
               ) : (
                   <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
                     <Avatar src={activeBaby?.imageURL} sx={{width: isMobile ? "120px" : "180px", height: isMobile? "120px" : "180px"}} />
-                   
+                    <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
                     {isMobile ? <></> :  <><Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}</Typography><Typography variant="subtitle1">Date of Birth: {dayjs(activeBaby.dateOfBirth).format("DD MMM YYYY")}</Typography></>}
                     <Select
                       labelId="baby-select-label"

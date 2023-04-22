@@ -113,7 +113,6 @@ export default function AddSleepLog({activeBaby, user}) {
                 setSleepRemarks("");
                 navigate("/main");
             } else {
-                navigate("/");
                 setError('Add Sleep Log Failed - Try Again');
             }
         } catch (err) {

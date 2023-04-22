@@ -69,7 +69,6 @@ export default function AddFeedLog({activeBaby, user}) {
           if (response.ok) {
             navigate("/main");
           } else {
-            navigate("/");
             setError("Add Feed Log Failed - Try Again");
           }
         } catch (err) {
@@ -130,11 +129,6 @@ export default function AddFeedLog({activeBaby, user}) {
             paddingTop: theme => theme.spacing(4),
             }}
         >
-            {/* {isLoading ? (
-                <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'center' }}>
-                    <CircularProgress />
-                </Box>
-            ) : ( */}
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
                   <Typography variant="h5">Add {activeBaby.name}'s Feed Log</Typography>
                   <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>

@@ -1,6 +1,5 @@
 import { Container, Box, Typography } from '@mui/material';
 import SignUpForm from "./SignUpForm";
-import { useEffect, useRef } from 'react';
 
 export default function SignUpPage({setUser}) {
 

@@ -21,6 +21,8 @@ import AddFeedLog from './pages/Feed/AddFeedLog';
 import StatusFeedLog from './pages/Feed/StatusFeedLog';
 import EditFeedLog from './pages/Feed/EditFeedLog';
 import MilestoneChecklist from './pages/Milestones/MilestoneChecklist';
+import GrowthTracker from './pages/GrowthTracker/GrowthTracker';
+import AddGrowthLog from './pages/GrowthTracker/AddGrowthLog';
 
 const theme = createTheme({
     palette: {
@@ -73,7 +75,7 @@ export default function App() {
             <Route path="/main" element={<Dashboard user={user} setActiveBaby={setActiveBaby} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/mybabies" element={<MyBabies user={user}/>}></Route>
             <Route path="/main/mybabies/add" element={<AddBaby user={user} onBabyAdded={onBabyAdded}/>}></Route>
-            <Route path="/main/mybabies/edit/:babyId" element={<EditBaby user={user}/>}></Route>
+            <Route path="/main/mybabies/edit/:babyId" element={<EditBaby user={user} setActiveBaby={setActiveBaby}/>}></Route>
             <Route path="/main/diaper" element={<StatusDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/diaper/add" element={<AddDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/diaper/edit/:id" element={<EditDiaperLog user={user} activeBaby={activeBaby}/>}></Route>
@@ -83,6 +85,8 @@ export default function App() {
             <Route path="/main/feed/add" element={<AddFeedLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/feed" element={<StatusFeedLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/milestones" element={<MilestoneChecklist user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/growthtracker/add" element={<AddGrowthLog user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/growthtracker" element={<GrowthTracker user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/users/login" element={<LoginPage setUser={setUser}/>}></Route>
             <Route path="/users/signup" element={<SignUpPage setUser={setUser}/>}></Route>
           </Routes>

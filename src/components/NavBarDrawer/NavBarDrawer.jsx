@@ -34,7 +34,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Feed Log" />
             </ListItem>
-            <ListItem component={Link} to="/main/feed/add" sx={{ pl: 4, textDecoration: 'none', color: 'inherit' }}>
+            <ListItem component={Link} to="/main/feed/add" sx={{ pl: 3, textDecoration: 'none', color: 'inherit' }}>
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
@@ -46,7 +46,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Diaper Log" />
             </ListItem>
-            <ListItem component={Link} to="/main/diaper/add" sx={{ pl: 4, textDecoration: 'none', color: 'inherit' }}>
+            <ListItem component={Link} to="/main/diaper/add" sx={{ pl: 3, textDecoration: 'none', color: 'inherit' }}>
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
@@ -58,18 +58,24 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Sleeping Log" />
             </ListItem>
-            <ListItem component={Link} to="/main/sleep/add" sx={{ pl: 4, textDecoration: 'none', color: 'inherit' }}>
+            <ListItem component={Link} to="/main/sleep/add" sx={{ pl: 3, textDecoration: 'none', color: 'inherit' }}>
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
               <ListItemText primary="Add Sleep Log" />
             </ListItem>
             <Divider key="divider5"/>
-            <ListItem key="Growth">
+            <ListItem key="Growth" component={Link} to="/main/growthtracker/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
                 <GrowthIcon />
               </ListItemIcon>
               <ListItemText primary="Growth Tracker" />
+            </ListItem>
+            <ListItem component={Link} to="/main/growthtracker/add" sx={{ pl: 3, textDecoration: 'none', color: 'inherit' }}>
+              <ListItemIcon>
+                <AddIcon />
+              </ListItemIcon>
+              <ListItemText primary="Add Growth Log" />
             </ListItem>
             <ListItem key="Milestones" component={Link} to="/main/milestones/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>

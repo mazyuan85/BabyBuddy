@@ -20,9 +20,18 @@ const babySchema = new Schema({
         type: String,
         maxLength: 500,
     },
+    gender : {
+        type: String,
+        enum: ["male", "female"],
+        required: true,
+    },
     completedMilestones: [{
         type: Number,
-    }]
+    }],
+    growth: [{
+        type: Schema.Types.ObjectId,
+        ref: "Growth",
+    }],
 }, {
     timestamps: true
 });

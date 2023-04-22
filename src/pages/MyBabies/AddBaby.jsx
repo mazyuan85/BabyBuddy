@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Box, Typography, Button, TextField, Avatar, useMediaQuery } from "@mui/material";
+import { Container, Box, Typography, Button, TextField, Avatar, useMediaQuery, InputLabel, MenuItem, FormControl, Select } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { styled } from "@mui/material";
@@ -10,8 +10,10 @@ export default function AddBaby({user, onBabyAdded}) {
     const isMobile = useMediaQuery("(max-width:600px)");
     const [babyName, setBabyName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState(dayjs());
+    const [gender, setGender] = useState("");
     const [imageFile, setImageFile] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,21 +35,26 @@ export default function AddBaby({user, onBabyAdded}) {
         }
       };
 
+      const handleGenderChange = (event) => {
+        setGender(event.target.value);
+      }
+
       const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!babyName || !dateOfBirth) {
-            alert("Please fill in all the fields.");
+        if (!babyName || !dateOfBirth || !gender) {
+            setError("Please fill in all the fields.");
             return;
         }
 
         if (dayjs(dateOfBirth).isAfter(dayjs())) {
-            alert("DOB cannot be ahead of current date.")
+            setError("DOB cannot be ahead of current date.")
             return;
         }
 
         const babyData = {
             name: babyName,
             dateOfBirth: dateOfBirth.toISOString(),
+            gender: gender
         }
 
         if (imageFile) {
@@ -65,7 +72,7 @@ export default function AddBaby({user, onBabyAdded}) {
                     const jsonResponse = await response.json();
                     babyData.imageURL = jsonResponse.secure_url;
                 } else {
-                    throw new Error("Failed to upload image");
+                    setError("Failed to upload image");
                 }
             } catch (error) {
                 console.error("Error uploading image:", error);
@@ -91,8 +98,7 @@ export default function AddBaby({user, onBabyAdded}) {
                 onBabyAdded(newBaby);
                 navigate("/main/mybabies");
             } else {
-                navigate("/");
-                throw new Error("Failed to add baby");
+                setError("Failed to add baby");
             }
         } catch (err) {
             console.error(err);
@@ -139,7 +145,19 @@ export default function AddBaby({user, onBabyAdded}) {
                 onChange={(e) => setBabyName(e.target.value)}
                 sx={{ marginTop: 3, width: isMobile? "210px" : "246px" }}
                 />
-
+                <FormControl sx={{ marginTop: 2, width: isMobile ? '210px' : '246px' }}>
+                    <InputLabel htmlFor="select-gender">Gender</InputLabel>
+                    <Select
+                        labelId="select-gender"
+                        id="simple-select"
+                        value={gender}
+                        label="Gender"
+                        onChange={handleGenderChange}
+                    >
+                        <MenuItem value={"male"}>Male</MenuItem>
+                        <MenuItem value={"female"}>Female</MenuItem>
+                    </Select>
+                </FormControl>
 
                 <DatePicker
                     label="Date of Birth"
@@ -163,6 +181,14 @@ export default function AddBaby({user, onBabyAdded}) {
                 >
                     Save
                 </Button>
+                <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    sx={{ marginTop: 5 }}
+                    >
+                    {error}
+                </Typography>
             </Box>
         </Container>
       );

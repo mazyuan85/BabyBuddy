@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Typography, Box, Button, Card, CardHeader, CardContent, Avatar, CircularProgress } from "@mui/material";
+import { Container, Typography, Box, Button, Card, CardHeader, Avatar, CircularProgress } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -8,6 +8,7 @@ export default function MyBabies({user}) {
     const [babies, setBabies] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+    const [error, setError] = useState("");
 
     useEffect(() => {
         if (!user) {
@@ -27,8 +28,7 @@ export default function MyBabies({user}) {
                     const fetchedBabies = await response.json();
                     setBabies(fetchedBabies);
                 } else {
-                    navigate("/");
-                    throw new Error("Failed to fetch babies.");
+                    setError("Failed to fetch babies.");
                 }
             } catch (error) {
                 console.error("Error fetching babies:", error);
@@ -53,6 +53,13 @@ export default function MyBabies({user}) {
                 }}
             >
                 <Typography variant="h4">My Babies</Typography>
+                <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
                 {isLoading ? (
                     <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'center' }}>
                         <CircularProgress />
@@ -70,18 +77,19 @@ export default function MyBabies({user}) {
                                 </Card>
                             </Link>
                         ))}
+                          <Box sx={{ width: '100%', marginTop: 2, display: 'flex', justifyContent: 'center' }}>
+                        <Button
+                            component={Link}
+                            to="/main/mybabies/add"
+                            color="primary"
+                            variant="contained"
+                            >
+                            Add Baby
+                        </Button>
+                    </Box>
                      </Box>
-                )}
 
-                <Button
-                    component={Link}
-                    to="/main/mybabies/add"
-                    color="primary"
-                    variant="contained"
-                    sx={{ marginTop: 2 }}
-                >
-                    Add Baby
-                </Button>
+            )}
             </Box>
         </Container>
     );

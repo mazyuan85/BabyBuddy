@@ -28,6 +28,9 @@ router.delete("/feed/delete/:id", ensureLoggedIn, mainController.deleteFeedLog);
 router.get("/feed", ensureLoggedIn, mainController.getFeedLog);
 router.put("/milestones", ensureLoggedIn, mainController.updateMilestonesLog);
 router.get("/milestones", ensureLoggedIn, mainController.getMilestonesLog);
+router.post("/growthtracker/add", ensureLoggedIn, mainController.addGrowthLog);
+router.delete("/growthtracker/delete/:id", ensureLoggedIn, mainController.deleteGrowthLog);
+router.get("/growthtracker", ensureLoggedIn, mainController.getGrowthLog);
 router.get("/", ensureLoggedIn, mainController.index);
 
 module.exports = router;

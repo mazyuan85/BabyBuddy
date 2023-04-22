@@ -3,6 +3,7 @@ const Baby = require("../models/Baby");
 const DiaperLog = require("../models/DiaperLog");
 const SleepLog = require("../models/SleepLog");
 const FeedLog = require("../models/FeedLog");
+const GrowthLog = require("../models/GrowthLog")
 const cloudinary = require("../config/cloudinaryConfig");
 const FormData = require('form-data');
 
@@ -68,6 +69,7 @@ const editBaby = async (req, res) => {
 
         baby.name = babyData.name;
         baby.dateOfBirth = babyData.dateOfBirth;
+        baby.gender = babyData.gender;
         if (babyData.imageURL) {
             baby.imageURL = babyData.imageURL;
         }
@@ -400,6 +402,43 @@ const updateMilestonesLog = async (req, res) => {
     }
 }
 
+const addGrowthLog = async (req, res) => {
+    try {
+    const newGrowthLog = new GrowthLog({...req.body})
+    await newGrowthLog.save();
+
+    return res.status(201).json({ 
+        message: "Growth log added successfully."
+    })
+    } catch (err) {
+        return res.status(500).json({ message: "An error occured while adding the growth log."})
+    }   
+}
+
+const deleteGrowthLog = async (req, res) => {
+    try {
+        const growthLog = req.params.id;
+        await GrowthLog.findByIdAndDelete(growthLog)
+        return res.status(201).json({ message: "Growth Log deleted."})
+    } catch (err) {
+        return res.status(500).json({ message: "An error occured while deleting the growth log."})
+    }
+}
+
+const getGrowthLog = async (req, res) => {
+    try {
+        const babyId = req.query.baby;
+        if (!babyId) {
+            return res.status(400).json({ message: "Missing baby ID in query"})
+        }
+        const growthLog = await GrowthLog.find({baby: babyId}).sort({date:1})
+        res.status(200).json(growthLog);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error retrieving growth logs" })
+    }
+}
+
 module.exports ={
     index,
     showBabies,
@@ -427,4 +466,7 @@ module.exports ={
     editSingleFeedLog,
     getMilestonesLog,
     updateMilestonesLog,
+    addGrowthLog,
+    deleteGrowthLog,
+    getGrowthLog,
 }

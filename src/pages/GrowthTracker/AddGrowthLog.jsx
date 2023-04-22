@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { Typography, Container, Box, CircularProgress, Avatar, TextField, Button } from "@mui/material";
-import { MobileDateTimePicker } from "@mui/x-date-pickers";
+import { Typography, Container, Box, CircularProgress, Avatar, TextField, Button, useMediaQuery, FormControl } from "@mui/material";
+import { MobileDatePicker } from "@mui/x-date-pickers";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
-export default function AddDiaperLog({activeBaby, user}) {
-      const [diaperType, setDiaperType] = useState("");
-      const [diaperRemarks, setDiaperRemarks] = useState("");
-      const [diaperTime, setDiaperTime] = useState(dayjs());
+export default function AddGrowthLog({activeBaby, user}) {
+      const [growthWeight, setGrowthWeight] = useState(0);
+      const [growthHeight, setGrowthHeight] = useState(0);
+      const [growthDate, setGrowthDate] = useState(dayjs());
       const [isDateValid, setIsDateValid] = useState(true);
       const [error, setError] = useState('');
       const navigate = useNavigate();
+      const isMobile = useMediaQuery("(max-width:600px)");
 
       useEffect(() => {
         if (!user) {
@@ -19,48 +20,44 @@ export default function AddDiaperLog({activeBaby, user}) {
         }
       }, [user, navigate]);
       
-      function handleChange(event) {
-        setDiaperRemarks(event.target.value);
-        setError('');
-      }
     
       async function handleSubmit(event) {
         event.preventDefault();
-        if (!diaperType) {
-            return setError("Please select pee or poo!")
+        if (growthDate.isBefore(activeBaby.dateOfBirth)) {
+            return setError("Please enter a date after baby's birthday!")
         }
-        if (!diaperTime) {
-            return setError("Please select a timing.")
+        if (!growthDate || !growthHeight || !growthWeight) {
+            return setError("Please check all inputs.")
         }
         if (!isDateValid) {
             return setError("Please select a valid timing.")
         }
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("/api/main/diaper/add", {
+            const response = await fetch("/api/main/growthtracker/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ baby : activeBaby._id, type: diaperType, remarks: diaperRemarks, dateTime: diaperTime })
+                body: JSON.stringify({ baby : activeBaby._id, weight: growthWeight, height: growthHeight, date: growthDate })
             });
             if (response.ok) {
-                navigate("/main");
+                navigate("/main/growthtracker");
             } else {
-                setError('Add Diaper Log Failed - Try Again');
+                setError('Add Growth Log Failed - Try Again');
             }
         } catch (err) {
             console.error(err);
         }
       }
 
-      function handleDateTimeChange(newValue) {
+      function handleDateChange(newValue) {
         if (!newValue || !newValue.isValid()) {
           setIsDateValid(false);
         } else {
           setIsDateValid(true);
-          setDiaperTime(newValue);
+          setGrowthDate(newValue);
         }
       }
     return (
@@ -76,11 +73,8 @@ export default function AddDiaperLog({activeBaby, user}) {
             }}
         >
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
-                  <Typography variant="h5">Add {activeBaby.name}'s Diaper Log</Typography>
-                  <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>
-                    <Avatar src="/images/peeicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "pee" ? "2px solid #3f51b5" : "none" }} onClick={()=> setDiaperType("pee")}/>
-                    <Avatar src="/images/pooicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "poo" ? "2px solid #3f51b5" : "none"}} onClick={()=> setDiaperType("poo")}/>
-                  </Box>
+                  <Typography variant="h5">Add {activeBaby.name}'s Growth Log</Typography>
+                  <Avatar src="/images/growthicon.png" sx={{width: isMobile ? "120px" : "180px", height: isMobile? "120px" : "180px", marginTop: 1}} />
                   <Box
                     component="form"
                     sx={{
@@ -93,27 +87,38 @@ export default function AddDiaperLog({activeBaby, user}) {
                     autoComplete="off"
                     onSubmit={handleSubmit}
                     >
+                    <FormControl sx={{marginTop:2, width:"130px"}}>
                     <TextField
-                        label="Remarks:"
-                        type="text"
-                        name="remarks"
-                        value={diaperRemarks}
-                        onChange={handleChange}
-                        margin="normal"
-                        sx={{width:300}}
-                    />
-                    <MobileDateTimePicker
-                        label="Change Diaper Timing"
+                        label="Height (cm)"
+                        type="number"
+                        variant="outlined"
+                        value={growthHeight}
+                        onChange={(e) => setGrowthHeight(e.target.value)}
+                        InputProps={{ inputProps: { min: 0, max: 120, step: "any" } }}
+                        />
+                    </FormControl>
+                    <FormControl sx={{marginTop:2, width:"130px"}}>
+                        <TextField
+                        label="Weight (kg)"
+                        type="number"
+                        variant="outlined"
+                        value={growthWeight}
+                        onChange={(e) => setGrowthWeight(e.target.value)}
+                        InputProps={{ inputProps: { min: 0, max: 20, step: "any"} }}
+                        />
+                     </FormControl>
+                    <MobileDatePicker
+                        label="Date of measurement"
                         disableFuture
-                        value={diaperTime}
-                        onChange={handleDateTimeChange}
+                        value={growthDate}
+                        onChange={handleDateChange}
                         textField={
                             <TextField
                             onKeyDown={(e)=>e.preventDefault()}
                             sx={{ marginTop: 2, width: "100%"}}
                             />
                         }
-                        sx={{ marginTop: 4}}
+                        sx={{ marginTop: 4, width:"50%"}}
                     />
                     <Button
                         type="submit"
@@ -133,6 +138,7 @@ export default function AddDiaperLog({activeBaby, user}) {
                     </Typography>
                     </Box>
                 </Box>
+
         </Box>
     </Container>
     )

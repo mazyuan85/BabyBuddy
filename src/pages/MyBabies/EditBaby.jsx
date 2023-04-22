@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Box, Typography, Button, TextField, Avatar, useMediaQuery } from "@mui/material";
+import { Container, Box, Typography, Button, TextField, Avatar, useMediaQuery, InputLabel, MenuItem, FormControl, Select  } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { styled } from "@mui/material";
@@ -7,12 +7,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import DeleteBabyConfirmation from "../../components/DeleteBabyConfirmation/DeleteBabyConfirmation";
 
 
-export default function EditBaby({user}) {
+export default function EditBaby({user, setActiveBaby}) {
     const isMobile = useMediaQuery("(max-width:600px)");
     const [babyName, setBabyName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState(dayjs());
+    const [gender, setGender] = useState("");
     const [imageFile, setImageFile] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     const { babyId } = useParams();
 
@@ -35,13 +38,15 @@ export default function EditBaby({user}) {
                     setBabyName(responseBody.name);
                     setDateOfBirth(dayjs(responseBody.dateOfBirth));
                     setPreviewImage(responseBody.imageURL);
+                    setGender(responseBody.gender);
                 }
                 else {
-                    navigate("/")
                     setError('Retrieving Baby Records Failed - Try Again');
                 }
             } catch (err) {
                 console.error(err)
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchBaby();
@@ -59,16 +64,21 @@ export default function EditBaby({user}) {
         }
       };
 
+      const handleGenderChange = (event) => {
+        setGender(event.target.value);
+      }
+
       const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!babyName || !dateOfBirth) {
-            alert("Please fill in all the fields.");
+        if (!babyName || !dateOfBirth || !gender) {
+            setError("Please fill in all the fields.");
             return;
         }
 
         const babyData = {
             name: babyName,
             dateOfBirth: dateOfBirth.toISOString(),
+            gender: gender,
         }
 
         if (imageFile) {
@@ -86,7 +96,7 @@ export default function EditBaby({user}) {
                     const jsonResponse = await response.json();
                     babyData.imageURL = jsonResponse.secure_url;
                 } else {
-                    throw new Error("Failed to upload image");
+                    setError("Failed to upload image");
                 }
             } catch (error) {
                 console.error("Error uploading image:", error);
@@ -108,9 +118,10 @@ export default function EditBaby({user}) {
 
             if (response.ok) {
                 const responseBody = await response.json();
+                setActiveBaby(responseBody);
                 navigate("/main/mybabies");
             } else {
-                throw new Error("Failed to add baby");
+                setError("Failed to add baby");
             }
         } catch (err) {
             console.error(err);
@@ -134,7 +145,7 @@ export default function EditBaby({user}) {
                 const responseBody = await response.json();
                 navigate("/main/mybabies");
             } else {
-                throw new Error("Failed to delete baby");
+                setError("Failed to delete baby");
             }
         } catch (err) {
             console.error(err);
@@ -159,6 +170,14 @@ export default function EditBaby({user}) {
                 }}
             >
                 <Typography variant="h4">Edit Your Baby</Typography>
+                <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
+
 
                 <AvatarLabel htmlFor="image-upload">
                     <Avatar
@@ -183,7 +202,20 @@ export default function EditBaby({user}) {
                 sx={{ marginTop: 3, width: isMobile? "210px" : "246px" }}
                 />
 
-
+                <FormControl sx={{ marginTop: 2, width: isMobile ? '210px' : '246px' }}>
+                    <InputLabel htmlFor="select-gender">Gender</InputLabel>
+                    <Select
+                        labelId="select-gender"
+                        id="simple-select"
+                        value={gender}
+                        label="Gender"
+                        onChange={handleGenderChange}
+                    >
+                        <MenuItem value={"male"}>Male</MenuItem>
+                        <MenuItem value={"female"}>Female</MenuItem>
+                    </Select>
+                </FormControl>
+                
                 <DatePicker
                     label="Date of Birth"
                     value={dateOfBirth}

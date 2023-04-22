@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUser, signUp } from "../../utilities/users-service";
+import { signUp } from "../../utilities/users-service";
 import { Box, TextField, Button, Grid, Typography, Container } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -18,8 +18,6 @@ export default function SignUpForm({setUser}) {
     const handleSubmit = async (event) => {
       event.preventDefault();
       try {
-        // await signUp(state);
-        // setUser(getUser());
         const user = await signUp(state);
         const {password, createdAt, updatedAt, ...userWithoutPassword} = user;
         setUser(userWithoutPassword);

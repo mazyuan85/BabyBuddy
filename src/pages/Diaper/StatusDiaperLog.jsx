@@ -39,8 +39,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                     const data = await response.json();
                     setDiaperLogs(data);
                 } else {
-                    navigate("/");
-                    setError('Retrieving Diaper Logs Failed - Try Again');
+                      setError('Retrieving Diaper Logs Failed - Try Again');
                 }
             } catch (err) {
                 console.error(err);
@@ -120,7 +119,7 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                 const remainingLogs = diaperLogs.filter((log) => log._id !== logId);
                 setDiaperLogs(remainingLogs);
             } else {
-                throw new Error("Failed to delete diaper log record");
+                setError("Failed to delete diaper log record");
             }
         } catch (err) {
             console.error(err);
@@ -167,6 +166,13 @@ export default function StatusDiaperLog ({user, activeBaby}) {
                     <Avatar src="/images/diapericon.png" sx={{width:"100px", height:"100px"}} />
                   </Link>
                   <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}'s Diaper Logs</Typography>
+                <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
                   <Box sx={{ width: "100%", mt: 3 }}>
                     <Typography variant="subtitle2">Poo Frequency /day</Typography>
                     <BarChart

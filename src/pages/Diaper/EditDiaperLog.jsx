@@ -9,6 +9,7 @@ export default function EditDiaperLog({activeBaby, user}) {
       const [diaperRemarks, setDiaperRemarks] = useState("");
       const [diaperTime, setDiaperTime] = useState(dayjs());
       const [isDateValid, setIsDateValid] = useState(true);
+      const [isLoading, setIsLoading] = useState(true);
       const [error, setError] = useState('');
       const navigate = useNavigate();
       const { id } = useParams();
@@ -34,11 +35,12 @@ export default function EditDiaperLog({activeBaby, user}) {
                     setDiaperType(responseBody.type)
                 }
                 else {
-                    navigate("/")
                     setError('Retrieving Diaper Log Failed - Try Again');
                 }
             } catch (err) {
                 console.log(err)
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchDiaperLog();
@@ -73,7 +75,6 @@ export default function EditDiaperLog({activeBaby, user}) {
             if (response.ok) {
                 navigate("/main/diaper");
             } else {
-                navigate("/");
                 setError('Edit Diaper Log Failed - Try Again');
             }
         } catch (err) {
@@ -101,13 +102,20 @@ export default function EditDiaperLog({activeBaby, user}) {
             paddingTop: theme => theme.spacing(4),
             }}
         >
-            {/* {isLoading ? (
+            {isLoading ? (
                 <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'center' }}>
                     <CircularProgress />
                 </Box>
-            ) : ( */}
+            ) : (
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
                   <Typography variant="h5">Edit {activeBaby.name}'s Diaper Log</Typography>
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
                   <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>
                     <Avatar src="/images/peeicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "pee" ? "2px solid #3f51b5" : "none" }} onClick={()=> setDiaperType("pee")}/>
                     <Avatar src="/images/pooicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "poo" ? "2px solid #3f51b5" : "none"}} onClick={()=> setDiaperType("poo")}/>
@@ -154,17 +162,9 @@ export default function EditDiaperLog({activeBaby, user}) {
                     >
                         Save
                     </Button>
-                    <Typography
-                        variant="body2"
-                        color="error"
-                        align="center"
-                        sx={{ marginTop: 5 }}
-                    >
-                        {error}
-                    </Typography>
                     </Box>
                 </Box>
-            {/* )} */}
+            )}
         </Box>
     </Container>
     )

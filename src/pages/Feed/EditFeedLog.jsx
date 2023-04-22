@@ -43,7 +43,6 @@ export default function EditFeedLog({activeBaby, user}) {
                     
                 }
                 else {
-                    navigate("/")
                     setError('Retrieving Feed Log Failed - Try Again');
                 }
             } catch (err) {
@@ -83,7 +82,6 @@ export default function EditFeedLog({activeBaby, user}) {
             if (response.ok) {
                 navigate("/main/feed");
             } else {
-                navigate("/");
                 setError('Edit Feed Log Failed - Try Again');
             }
         } catch (err) {
@@ -148,6 +146,13 @@ export default function EditFeedLog({activeBaby, user}) {
             ) : ( */}
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
                   <Typography variant="h5">Add {activeBaby.name}'s Feed Log</Typography>
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
                   <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>
                     <Avatar src="/images/breastfeedingicon.png" sx={{width:"60px", height:"60px", cursor:"pointer", border: feedType === "breast" ? "2px solid #3f51b5" : "none" }} onClick={()=> setFeedType("breast")}/>
                     <Avatar src="/images/bottleicon.png" sx={{width:"60px", height:"60px", cursor:"pointer", border: feedType === "bottle" ? "2px solid #3f51b5" : "none"}} onClick={()=> setFeedType("bottle")}/>

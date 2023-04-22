@@ -39,7 +39,6 @@ export default function StatusSleepLog ({user, activeBaby}) {
                     const data = await response.json();
                     setSleepLogs(data);
                 } else {
-                    navigate("/");
                     setError('Retrieving Diaper Logs Failed - Try Again');
                 }
             } catch (err) {
@@ -196,6 +195,13 @@ export default function StatusSleepLog ({user, activeBaby}) {
                     <Avatar src="/images/sleepicon.png" sx={{width:"100px", height:"100px"}} />
                   </Link>
                   <Typography variant="h6" sx={{marginTop: 2}}>{activeBaby.name}'s Sleep Logs</Typography>
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    align="center"
+                    >
+                    {error}
+                </Typography>
                   <Box sx={{ width: "100%", mt: 3 }}>
                     <Typography variant="subtitle2">Sleep Duration (hours) /day</Typography>
                     <BarChart
