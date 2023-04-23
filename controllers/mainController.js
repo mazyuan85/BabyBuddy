@@ -4,6 +4,7 @@ const DiaperLog = require("../models/DiaperLog");
 const SleepLog = require("../models/SleepLog");
 const FeedLog = require("../models/FeedLog");
 const GrowthLog = require("../models/GrowthLog")
+const Appointment = require("../models/Appointment")
 const cloudinary = require("../config/cloudinaryConfig");
 const FormData = require('form-data');
 
@@ -439,6 +440,78 @@ const getGrowthLog = async (req, res) => {
     }
 }
 
+const addAppointment = async (req, res) => {
+    try {
+        const newAppointment = new Appointment({...req.body})
+        await newAppointment.save();
+    
+        return res.status(201).json({ 
+            message: "New appointment added successfully."
+        })
+        } catch (err) {
+            return res.status(500).json({ message: "An error occured while adding the growth log."})
+        }   
+}
+
+const getAppointments = async (req, res) => {
+    try {
+        const babyId = req.query.baby;
+        if (!babyId) {
+            return res.status(400).json({ message: "Missing baby ID in query"})
+        }
+        const appointments = await Appointment.find({baby: babyId}).sort({ dateTime: -1})
+        res.status(200).json(appointments);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error retrieving appointments" })
+    }
+}
+
+const deleteAppointment = async (req, res) => {
+    try {
+        const appointment = req.params.id;
+        await Appointment.findByIdAndDelete(appointment)
+        return res.status(201).json({ message: "Appointment deleted."})
+    } catch (err) {
+        return res.status(500).json({ message: "An error occured while deleting the appointment."})
+    }
+}
+
+const editAppointment = async (req, res) => {
+    try {
+        const appointmentData = req.body;
+        const appointment = await Appointment.findById(req.params.id);
+        
+        if (!appointment) {
+            return res.status(404).json({ message: "Appointment not found" });
+        }
+        appointment.type = appointmentData.type;
+        appointment.remarks = appointmentData.remarks;
+        appointment.dateTime = appointmentData.dateTime;
+        appointment.sendReminder = appointmentData.sendReminder;
+      
+        await appointment.save();
+
+        return res.json(appointment);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while editing appointment details."})
+    }
+}
+
+const getAppointment = async (req, res) => {
+    try {
+        const appointment = await Appointment.findById(req.params.id);
+        if (!appointment) {
+          return res.status(404).json({ message: "Appointment not found" });
+        }
+        return res.status(200).json(appointment);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "An error occured while retrieving appointment details."})
+    }
+}
+
 module.exports ={
     index,
     showBabies,
@@ -469,4 +542,9 @@ module.exports ={
     addGrowthLog,
     deleteGrowthLog,
     getGrowthLog,
+    addAppointment,
+    getAppointments,
+    deleteAppointment,
+    editAppointment,
+    getAppointment,
 }

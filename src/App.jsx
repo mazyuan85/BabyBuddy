@@ -23,6 +23,9 @@ import EditFeedLog from './pages/Feed/EditFeedLog';
 import MilestoneChecklist from './pages/Milestones/MilestoneChecklist';
 import GrowthTracker from './pages/GrowthTracker/GrowthTracker';
 import AddGrowthLog from './pages/GrowthTracker/AddGrowthLog';
+import AddAppointment from './pages/Appointment/AddAppointment';
+import Appointments from './pages/Appointment/Appointments';
+import EditAppointment from './pages/Appointment/EditAppointment';
 
 const theme = createTheme({
     palette: {
@@ -87,6 +90,9 @@ export default function App() {
             <Route path="/main/milestones" element={<MilestoneChecklist user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/growthtracker/add" element={<AddGrowthLog user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/main/growthtracker" element={<GrowthTracker user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/appointments/" element={<Appointments user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/appointments/add" element={<AddAppointment user={user} activeBaby={activeBaby}/>}></Route>
+            <Route path="/main/appointments/edit/:id" element={<EditAppointment user={user} activeBaby={activeBaby}/>}></Route>
             <Route path="/users/login" element={<LoginPage setUser={setUser}/>}></Route>
             <Route path="/users/signup" element={<SignUpPage setUser={setUser}/>}></Route>
           </Routes>

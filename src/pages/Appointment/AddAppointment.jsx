@@ -1,68 +1,75 @@
-import { useEffect, useState } from "react";
-import { Typography, Container, Box, Avatar, TextField, Button } from "@mui/material";
+import { useState, useEffect } from "react"
+import { Typography, Container, Box, Avatar, TextField, Button, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
-export default function AddDiaperLog({activeBaby, user}) {
-      const [diaperType, setDiaperType] = useState("");
-      const [diaperRemarks, setDiaperRemarks] = useState("");
-      const [diaperTime, setDiaperTime] = useState(dayjs());
-      const [isDateValid, setIsDateValid] = useState(true);
-      const [error, setError] = useState('');
-      const navigate = useNavigate();
 
-      useEffect(() => {
+export default function AddAppointment({activeBaby, user}) {
+    const [appointmentType, setAppointmentType] = useState("");
+    const [appointmentRemarks, setAppointmentRemarks] = useState("");
+    const [appointmentTime, setAppointmentTime] = useState(dayjs());
+    const [isDateValid, setIsDateValid] = useState(true);
+    const [sendReminder, setSendReminder] = useState(false);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
         if (!user) {
             navigate("/");
             return;
         }
-      }, [user, navigate]);
-      
-      function handleChange(event) {
-        setDiaperRemarks(event.target.value);
+    }, [user, navigate]);
+
+    function handleChange(event) {
+        setAppointmentRemarks(event.target.value);
         setError('');
-      }
-    
-      async function handleSubmit(event) {
-        event.preventDefault();
-        if (!diaperType) {
-            return setError("Please select pee or poo!")
+    }
+
+    function handleCheckboxChange(event) {
+        setSendReminder(event.target.checked);
+    }
+
+    function handleDateTimeChange(newValue) {
+        if (!newValue || !newValue.isValid()) {
+          setIsDateValid(false);
+        } else {
+          setIsDateValid(true);
+          setAppointmentTime(newValue);
         }
-        if (!diaperTime) {
-            return setError("Please select a timing.")
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        if (!appointmentType) {
+            return setError("Please select an appointment type!")
+        }
+        if (!appointmentTime) {
+            return setError("Please select an appointment timing.")
         }
         if (!isDateValid) {
             return setError("Please select a valid timing.")
         }
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("/api/main/diaper/add", {
+            const response = await fetch("/api/main/appointments/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ baby : activeBaby._id, type: diaperType, remarks: diaperRemarks, dateTime: diaperTime })
+                body: JSON.stringify({ baby : activeBaby._id, type: appointmentType, remarks: appointmentRemarks, dateTime: appointmentTime, sendReminder: sendReminder })
             });
             if (response.ok) {
-                navigate("/main");
+                navigate("/main/appointments");
             } else {
-                setError('Add Diaper Log Failed - Try Again');
+                setError('Add Appointment Log Failed - Try Again');
             }
         } catch (err) {
             console.error(err);
         }
       }
 
-      function handleDateTimeChange(newValue) {
-        if (!newValue || !newValue.isValid()) {
-          setIsDateValid(false);
-        } else {
-          setIsDateValid(true);
-          setDiaperTime(newValue);
-        }
-      }
     return (
         <Container maxWidth="sm" disableGutters>
         <Box
@@ -76,10 +83,10 @@ export default function AddDiaperLog({activeBaby, user}) {
             }}
         >
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
-                  <Typography variant="h5">Add {activeBaby.name}'s Diaper Log</Typography>
+                  <Typography variant="h5">Add {activeBaby.name}'s Appointment</Typography>
                   <Box sx={{display:"flex", width:"100%", justifyContent:"space-evenly", marginTop:3}}>
-                    <Avatar src="/images/peeicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "pee" ? "2px solid #3f51b5" : "none" }} onClick={()=> setDiaperType("pee")}/>
-                    <Avatar src="/images/pooicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: diaperType === "poo" ? "2px solid #3f51b5" : "none"}} onClick={()=> setDiaperType("poo")}/>
+                    <Avatar src="/images/vaccinationicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: appointmentType === "vaccination" ? "2px solid #3f51b5" : "none" }} onClick={()=> setAppointmentType("vaccination")}/>
+                    <Avatar src="/images/medicalicon.png" sx={{width:"90px", height:"90px", cursor:"pointer", border: appointmentType === "medical" ? "2px solid #3f51b5" : "none"}} onClick={()=> setAppointmentType("medical")}/>
                   </Box>
                   <Box
                     component="form"
@@ -97,15 +104,14 @@ export default function AddDiaperLog({activeBaby, user}) {
                         label="Remarks:"
                         type="text"
                         name="remarks"
-                        value={diaperRemarks}
+                        value={appointmentRemarks}
                         onChange={handleChange}
                         margin="normal"
                         sx={{width:300}}
                     />
                     <MobileDateTimePicker
-                        label="Change Diaper Timing"
-                        disableFuture
-                        value={diaperTime}
+                        label="Change Appointment Timing"
+                        value={appointmentTime}
                         onChange={handleDateTimeChange}
                         textField={
                             <TextField
@@ -115,6 +121,9 @@ export default function AddDiaperLog({activeBaby, user}) {
                         }
                         sx={{ marginTop: 4}}
                     />
+                    <FormGroup sx={{marginTop: 2}}>
+                        <FormControlLabel control={<Checkbox onChange={handleCheckboxChange}/>} label={<Typography variant="subtitle2">Receive email reminder on day of appointment</Typography>} />
+                    </FormGroup>
                     <Button
                         type="submit"
                         variant="contained"

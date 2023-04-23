@@ -31,6 +31,11 @@ router.get("/milestones", ensureLoggedIn, mainController.getMilestonesLog);
 router.post("/growthtracker/add", ensureLoggedIn, mainController.addGrowthLog);
 router.delete("/growthtracker/delete/:id", ensureLoggedIn, mainController.deleteGrowthLog);
 router.get("/growthtracker", ensureLoggedIn, mainController.getGrowthLog);
+router.post("/appointments/add", ensureLoggedIn, mainController.addAppointment);
+router.get("/appointments/edit/:id", ensureLoggedIn, mainController.getAppointment);
+router.put("/appointments/edit/:id", ensureLoggedIn, mainController.editAppointment);
+router.delete("/appointments/delete/:id", ensureLoggedIn, mainController.deleteAppointment);
+router.get("/appointments/", ensureLoggedIn, mainController.getAppointments);
 router.get("/", ensureLoggedIn, mainController.index);
 
 module.exports = router;

@@ -18,13 +18,10 @@ const appointmentSchema = new Schema({
     remarks: {
         type: String,
     },
-    reminderSet: {
+    sendReminder : {
         type: Boolean,
         default: false,
-    },
-    reminderJobId: {
-        type: String,
-    },
+    }
 }, {
     timestamps: true
 });

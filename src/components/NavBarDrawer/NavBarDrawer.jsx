@@ -28,6 +28,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               </ListItemIcon>
               <ListItemText primary="Dashboard" />
             </ListItem>
+            <Divider key="divider1"/>
             <ListItem key="Feed" component={Link} to="/main/feed/" sx={{textDecoration:"none", color: "inherit"}}>
               <ListItemIcon>
                 <WaterDropIcon />
@@ -38,7 +39,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
-              <ListItemText primary="Add Feed Log" />
+              <ListItemText secondary="Add Feed Log" />
             </ListItem>
             <ListItem key="Diaper" component={Link} to="/main/diaper/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
@@ -50,7 +51,7 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
-              <ListItemText primary="Add Diaper Log" />
+              <ListItemText secondary="Add Diaper Log" />
             </ListItem>
             <ListItem key="Sleep" component={Link} to="/main/sleep/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
@@ -62,9 +63,21 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
-              <ListItemText primary="Add Sleep Log" />
+              <ListItemText secondary="Add Sleep Log" />
             </ListItem>
-            <Divider key="divider5"/>
+            <Divider key="divider2"/>
+            <ListItem key="Appointments" component={Link} to="/main/appointments/" sx={{textDecoration:"none", color:"inherit"}}>
+              <ListItemIcon>
+                <AppointmentsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Appointments" />
+            </ListItem>
+            <ListItem component={Link} to="/main/appointments/add" sx={{ pl: 3, textDecoration: 'none', color: 'inherit' }}>
+              <ListItemIcon>
+                <AddIcon />
+              </ListItemIcon>
+              <ListItemText secondary="Add Appointment" />
+            </ListItem>
             <ListItem key="Growth" component={Link} to="/main/growthtracker/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
                 <GrowthIcon />
@@ -75,19 +88,13 @@ export default function NavBarDrawer({drawerOpen, setDrawerOpen}) {
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
-              <ListItemText primary="Add Growth Log" />
+              <ListItemText secondary="Add Growth Log" />
             </ListItem>
             <ListItem key="Milestones" component={Link} to="/main/milestones/" sx={{textDecoration:"none", color:"inherit"}}>
               <ListItemIcon>
                 <MilestonesIcon />
               </ListItemIcon>
               <ListItemText primary="Milestones" />
-            </ListItem>
-            <ListItem key="Appointments">
-              <ListItemIcon>
-                <AppointmentsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Appointments" />
             </ListItem>
           </List>
         </div>
