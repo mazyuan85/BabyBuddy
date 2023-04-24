@@ -10,9 +10,7 @@ const port = process.env.PORT || 3000;
 
 const usersRouter = require("./routes/usersRouter");
 const mainRouter = require("./routes/mainRouter")
-// const collectionsRouter = require('./routes/collectionsRouter');
-// const searchesRouter = require('./routes/searchesRouter')
-// const loansRouter = require("./routes/loansRouter")
+const remindersRouter = require('./routes/remindersRouter');
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -20,9 +18,7 @@ app.use(express.static(path.join(__dirname, "dist")));
 app.use(require('./config/checkToken'));
 app.use("/api/users", usersRouter);
 app.use("/api/main", mainRouter);
-// app.use("/api/books", collectionsRouter);
-// app.use("/api/search", searchesRouter);
-// app.use("/api/loans", loansRouter);
+app.use("/api", remindersRouter);
 
 app.get("/api", (req, res) => {
   res.send("Hi!");
