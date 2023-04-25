@@ -1,8 +1,10 @@
 const Appointment = require("../models/Appointment");
 const nodemailer = require("nodemailer");
 require('dotenv').config();
+const dayjs = require("dayjs")
 
 async function sendReminders(req, res) {
+  // Verify if api key is correct
   const apiKey = req.query.apikey;
   if (apiKey !== process.env.API_KEY) {
     res.status(403).json({ error: "Invalid API key" });
@@ -17,6 +19,7 @@ async function sendReminders(req, res) {
   try {
     const appointments = await Appointment.find({
       sendReminder: true,
+      // Find appointments greater/than equal to start of day and less than end of day
       dateTime: { $gte: startOfDay, $lt: endOfDay },
     }).populate({
       path: "baby",
@@ -41,7 +44,7 @@ async function sendReminders(req, res) {
 }
 
 async function sendReminder(appointment) {
-    // Configure your email transport and authentication details
+    // Email transport and authentication details
     const transporter = nodemailer.createTransport({
       service: "outlook",
       auth: {
@@ -55,7 +58,7 @@ async function sendReminder(appointment) {
       from: process.env.EMAIL,
       to: appointment.baby.user.email,
       subject: `Appointment Reminder for ${appointment.baby.name}`,
-      text: `Reminder: You have an appointment on ${appointment.dateTime}. Remarks (if any): ${appointment.remarks}`,
+      text: `Reminder: You have a ${appointment.type} appointment for ${appointment.baby.name} at ${dayjs(appointment.dateTime).format("h:mm A, DD/MM/YYYY")}. Remarks (if any): ${appointment.remarks}`,
     };
   
     // Send email

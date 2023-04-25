@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMediaQuery, Container, Box, Avatar, Typography, CircularProgress, List, ListItem, ListItemAvatar, ListItemText, IconButton } from "@mui/material";
+import { Container, Box, Avatar, Typography, CircularProgress, List, ListItem, ListItemAvatar, ListItemText, IconButton } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from "dayjs";
@@ -12,7 +12,6 @@ export default function Appointments ({user, activeBaby}) {
     const [isLoading, setIsLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [selectedLogId, setSelectedLogId] = useState(null);
-    const isMobile = useMediaQuery("(max-width:600px)"); 
     const navigate = useNavigate();
 
 

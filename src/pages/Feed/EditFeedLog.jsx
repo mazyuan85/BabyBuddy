@@ -14,6 +14,7 @@ export default function EditFeedLog({activeBaby, user}) {
       const [feedMedicine, setFeedMedicine] = useState("");
       const [isDateValid, setIsDateValid] = useState(true);
       const [error, setError] = useState('');
+      const [isLoading, setIsLoading] = useState(true);
       const navigate = useNavigate();
       const { id } = useParams();
 
@@ -47,6 +48,8 @@ export default function EditFeedLog({activeBaby, user}) {
                 }
             } catch (err) {
                 console.log(err)
+            } finally {
+              setIsLoading(false);
             }
         }
         fetchFeedLog();
@@ -139,11 +142,11 @@ export default function EditFeedLog({activeBaby, user}) {
             paddingTop: theme => theme.spacing(4),
             }}
         >
-            {/* {isLoading ? (
+            {isLoading ? (
                 <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'center' }}>
                     <CircularProgress />
                 </Box>
-            ) : ( */}
+            ) : (
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
                   <Typography variant="h5">Add {activeBaby.name}'s Feed Log</Typography>
                   <Typography
@@ -220,6 +223,7 @@ export default function EditFeedLog({activeBaby, user}) {
                     : feedType == "food" ? 
                     <>
                     <Typography variant="h6">Food</Typography>
+                    <Container maxWidth="xs" disableGutters>
                     <Box sx={{ display:"flex", flexDirection:"row", alignItems:"center"}}>
                     <Grid container spacing={2} sx={{marginTop: 1, margin: 1}}>
                     {foodOptions.map((foodOption, index) => (
@@ -234,6 +238,7 @@ export default function EditFeedLog({activeBaby, user}) {
                     ))}
                   </Grid>
                   </Box>
+                  </Container>
                   </>
                     : feedType === "medicine" ? 
                     <>
@@ -295,7 +300,7 @@ export default function EditFeedLog({activeBaby, user}) {
                     </Typography>
                     </Box>
                 </Box>
-        
+            )}
         </Box>
     </Container>
     )
