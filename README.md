@@ -50,7 +50,7 @@ https://babybuddy-qsh6.onrender.com/
 
 ## Database Model
 
-![DatabaseSchema](images/readme/dbmodel.png)
+![DatabaseSchema](https://raw.githubusercontent.com/mazyuan85/BabyBuddy/main/public/images/readme/dbmodel.png)
 
 ## Development Approach
 
