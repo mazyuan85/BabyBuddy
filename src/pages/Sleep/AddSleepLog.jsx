@@ -84,7 +84,6 @@ export default function AddSleepLog({activeBaby, user}) {
                 setIsSleeping(true)
                 navigate("/main");
             } else {
-                navigate("/");
                 setError('Add Sleep Log Failed - Try Again');
             }
         } catch (err) {

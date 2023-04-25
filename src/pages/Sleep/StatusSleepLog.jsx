@@ -74,6 +74,7 @@ export default function StatusSleepLog ({user, activeBaby}) {
         return acc;
     }, {});
 
+    // Sort logs by displayTime in descending order
     Object.entries(groupedLogs).forEach(([date, logs]) => {
         logs.sort((a, b) => new Date(b.displayTime) - new Date(a.displayTime));
     });
@@ -89,24 +90,30 @@ export default function StatusSleepLog ({user, activeBaby}) {
             const end = dayjs(log.endDateTime || new Date());
         
             let currentDate = start.startOf('day');
+            // Loop through all days between the start and end dates, inclusive
             while (currentDate.isBefore(end, 'day') || currentDate.isSame(end, 'day')) {
               const date = currentDate.format("L");
+
+            // If the date key doesn't exist in the acc initialise it with a date
+            if (!acc[date]) {
               if (!acc[date]) {
                 acc[date] = { date, hoursPerDay: 0 };
               }
         
               let currentStartDate = start.isSame(currentDate, 'day') ? start : currentDate.clone().startOf('day');
               let currentEndDate = currentDate.clone().endOf('day');
+              // If the end date is before the current end date, set the current end date to the end date
               if (end.isBefore(currentEndDate)) {
                 currentEndDate = end;
               }
-              
+              // Calculate the duration in hours between the current start date and current end date
               const durationInHours = currentEndDate.diff(currentStartDate, 'hour');
+              // Add the duration to the hoursPerDay accumulator for the current date
               acc[date].hoursPerDay += durationInHours;
-        
+             // Move to the next day
               currentDate = currentDate.add(1, 'day').startOf('day');
             }
-        
+            }
             return acc;
           }, {});
       };
