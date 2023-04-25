@@ -148,7 +148,7 @@ export default function EditFeedLog({activeBaby, user}) {
                 </Box>
             ) : (
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems:"center" }}>
-                  <Typography variant="h5">Add {activeBaby.name}'s Feed Log</Typography>
+                  <Typography variant="h5">Edit {activeBaby.name}'s Feed Log</Typography>
                   <Typography
                     variant="body2"
                     color="error"
